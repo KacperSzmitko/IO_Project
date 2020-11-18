@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Client
+namespace Tic_Tac_Toe
 {
-    class Program
+    class App
     {
         static void Main(string[] args)
         {
