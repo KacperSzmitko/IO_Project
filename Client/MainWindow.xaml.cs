@@ -15,14 +15,18 @@ using System.Windows.Shapes;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
-        {
+        public MainWindow() {
             InitializeComponent();
+        }
+
+        private void LoginButton_Click(object sender, RoutedEventArgs e) {
+            
+        }
+
+        private void RegisterButton_Click(object sender, RoutedEventArgs e) {
+
         }
     }
 }
