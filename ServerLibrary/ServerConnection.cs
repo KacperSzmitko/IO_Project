@@ -15,13 +15,12 @@ namespace ServerLibrary
 
     class ServerConnection
     {
-        static X509Certificate serverCertificate = null;
+        public delegate void TransmissionDataDelegate(SslStream stream);
         public ClientProcesing menager {get;set;}
         public void RunServer(string certificate)
         {
-            serverCertificate = X509Certificate.CreateFromCertFile(certificate);
             // Create a TCP/IP (IPv4) socket and listen for incoming connections.
-            TcpListener listener = new TcpListener(IPAddress.Any, 8080);
+            TcpListener listener = new TcpListener(IPAddress.Any, 17777);
             listener.Start();
             while (true)
             {
@@ -31,35 +30,25 @@ namespace ServerLibrary
             }
         }
 
-        public void AuthClient(TcpClient client)
-        {
-           // A client has connected. Create the
-           // SslStream using the client's network stream.
-           SslStream sslStream = new SslStream(
-                client.GetStream(), false);
-            // Authenticate the server but don't require the client to authenticate.
-            try
-            {
-                sslStream.BeginAuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true, OnAuthenticated, sslStream);
-            }
-            catch (AuthenticationException e)
-            {
-                Console.WriteLine("Exception: {0}", e.Message);
-                if (e.InnerException != null)
-                {
-                    Console.WriteLine("Inner exception: {0}", e.InnerException.Message);
-                }
-                Console.WriteLine("Authentication failed - closing the connection.");
-                sslStream.Close();
-                client.Close();
-                return;
-            }
+        private void TransmissionCallback(IAsyncResult result) {
+            var tcpClient = result.AsyncState as TcpClient;
+            tcpClient.Close();
         }
 
-        //Function invoked after authentication as server
-        protected void OnAuthenticated(IAsyncResult result)
+        public void AuthClient(TcpClient client) 
         {
-            var sslStream = result.AsyncState as SslStream;
+
+            // A client has connected. Create the
+            // SslStream using the client's network stream.
+            SslStream sslStream = new SslStream(client.GetStream(), false);
+            TransmissionDataDelegate transmissionDelegate = new TransmissionDataDelegate(OnAuthenticated);
+            transmissionDelegate.BeginInvoke(sslStream, TransmissionCallback, client);
+            // Authenticate the server but don't require the client to authenticate.
+        }
+        //Function invoked after authentication as server
+        protected void OnAuthenticated(SslStream sslStream)
+        {
+            
             int playerID = menager.AddPlayer(new Player());
             string sendMessage = "";
             byte[] buffer = new byte[2048];
@@ -69,18 +58,16 @@ namespace ServerLibrary
 
             bytes = sslStream.Read(buffer, 0, buffer.Length);
 
-            Decoder decoder = Encoding.UTF8.GetDecoder();
+            Decoder decoder = Encoding.ASCII.GetDecoder();
             char[] chars = new char[decoder.GetCharCount(buffer, 0, bytes)];
             decoder.GetChars(buffer, 0, bytes, chars, 0);
             messageData.Append(chars);
 
-            if (messageData.ToString().IndexOf("<EOF>") != -1)
-            {
-                return;
-            }
 
-            sendMessage = menager.ProccesClient(messageData.ToString(), playerID);
-            byte[] message = Encoding.UTF8.GetBytes(sendMessage + "< EOF>");
+            Console.WriteLine(messageData);
+
+            //sendMessage = menager.ProccesClient(messageData.ToString(), playerID);
+            byte[] message = Encoding.ASCII.GetBytes("PYK");
             sslStream.Write(message);
         }
 
@@ -98,9 +85,9 @@ namespace ServerLibrary
                 // Read the client's test message.
                 bytes = sslStream.Read(buffer, 0, buffer.Length);
 
-                // Use Decoder class to convert from bytes to UTF8
+                // Use Decoder class to convert from bytes to ASCII
                 // in case a character spans two buffers.
-                Decoder decoder = Encoding.UTF8.GetDecoder();
+                Decoder decoder = Encoding.ASCII.GetDecoder();
                 char[] chars = new char[decoder.GetCharCount(buffer, 0, bytes)];
                 decoder.GetChars(buffer, 0, bytes, chars, 0);
                 messageData.Append(chars);
