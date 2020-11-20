@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Tic_Tac_Toe
 {
-    class App
+    class StartServer
     {
 		static void Main(string[] args)
 		{
