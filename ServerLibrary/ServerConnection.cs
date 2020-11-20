@@ -8,58 +8,35 @@ using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ServerLibrary
 {
 
-
     class ServerConnection
     {
-        static X509Certificate serverCertificate = null;
+        public delegate void ParameterizedThreadStart(TcpClient client);
         public ClientProcesing menager {get;set;}
         public void RunServer(string certificate)
         {
-            serverCertificate = X509Certificate.CreateFromCertFile(certificate);
             // Create a TCP/IP (IPv4) socket and listen for incoming connections.
-            TcpListener listener = new TcpListener(IPAddress.Any, 8080);
+            TcpListener listener = new TcpListener(IPAddress.Any, 14000);
             listener.Start();
             while (true)
             {
                 Console.WriteLine("Waiting for a client to connect...");
                 TcpClient client = listener.AcceptTcpClient();
+                Thread t = new Thread(AuthClient);
                 AuthClient(client);
             }
         }
 
-        public void AuthClient(TcpClient client)
+        public void AuthClient(Object obj)
         {
-           // A client has connected. Create the
-           // SslStream using the client's network stream.
-           SslStream sslStream = new SslStream(
-                client.GetStream(), false);
-            // Authenticate the server but don't require the client to authenticate.
-            try
-            {
-                sslStream.BeginAuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true, OnAuthenticated, sslStream);
-            }
-            catch (AuthenticationException e)
-            {
-                Console.WriteLine("Exception: {0}", e.Message);
-                if (e.InnerException != null)
-                {
-                    Console.WriteLine("Inner exception: {0}", e.InnerException.Message);
-                }
-                Console.WriteLine("Authentication failed - closing the connection.");
-                sslStream.Close();
-                client.Close();
-                return;
-            }
-        }
+            TcpClient client = obj as TcpClient;
+            NetworkStream stream = client.GetStream();
 
-        //Function invoked after authentication as server
-        protected void OnAuthenticated(IAsyncResult result)
-        {
-            var sslStream = result.AsyncState as SslStream;
             int playerID = menager.AddPlayer(new Player());
             string sendMessage = "";
             byte[] buffer = new byte[2048];
@@ -67,7 +44,7 @@ namespace ServerLibrary
             int bytes = -1;
 
 
-            bytes = sslStream.Read(buffer, 0, buffer.Length);
+            bytes = stream.Read(buffer, 0, buffer.Length);
 
             Decoder decoder = Encoding.UTF8.GetDecoder();
             char[] chars = new char[decoder.GetCharCount(buffer, 0, bytes)];
@@ -81,7 +58,13 @@ namespace ServerLibrary
 
             sendMessage = menager.ProccesClient(messageData.ToString(), playerID);
             byte[] message = Encoding.UTF8.GetBytes(sendMessage + "< EOF>");
-            sslStream.Write(message);
+            stream.Write(message);
+        }
+
+        //Function invoked after authentication as server
+        protected void OnAuthenticated(IAsyncResult result)
+        {
+           
         }
 
 

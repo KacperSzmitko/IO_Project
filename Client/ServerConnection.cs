@@ -22,8 +22,8 @@ namespace Client
         }
 
         public ServerConnection(string serverAddress, ushort serverPort) {
-            this.tcpClient = new TcpClient(serverAddress, serverPort);
-            this.sslStream = new SslStream(tcpClient.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+            this.tcpClient = new TcpClient(serverAddress, 14000);
+            this.sslStream = new SslStream(tcpClient.GetStream(), false);
         }
 
         public string GetSslErrors() {
