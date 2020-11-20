@@ -7,7 +7,13 @@ namespace ServerLibrary
     {
         static void Main(string[] args)
         {
+            Security.MakeCert();
             ServerConnection server = new ServerConnection();
+           
+            
+            
+            
+            
             server.RunServer("./cert.cer");
         }
     }
