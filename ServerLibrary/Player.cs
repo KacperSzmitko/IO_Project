@@ -7,16 +7,19 @@ namespace ServerLibrary
 {
     class Player
     {
-        public IPAddress addres { get; set; }
+
+        public IPAddress address { get; set; }
         public  int sessionId { get; set; }
         public string name { get; set; }
         
         //Index to Games array
         public int match_id { get; set; }
 
-        Player(IPAddress addres)
+
+ 
+
+        public Player()
         {
-            this.addres = addres;
             this.sessionId = -1;
             this.name = null;
             this.match_id = -1;

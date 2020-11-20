@@ -11,10 +11,13 @@ using System.Text;
 
 namespace ServerLibrary
 {
+
+
     class ServerConnection
     {
         static X509Certificate serverCertificate = null;
-        public static void RunServer(string certificate)
+        public ClientProcesing menager {get;set;}
+        public void RunServer(string certificate)
         {
             serverCertificate = X509Certificate.CreateFromCertFile(certificate);
             // Create a TCP/IP (IPv4) socket and listen for incoming connections.
@@ -23,37 +26,21 @@ namespace ServerLibrary
             while (true)
             {
                 Console.WriteLine("Waiting for a client to connect...");
-                // Application blocks while waiting for an incoming connection.
-                // Type CNTL-C to terminate the server.
                 TcpClient client = listener.AcceptTcpClient();
-                ProcessClient(client);
+                AuthClient(client);
             }
         }
 
-        static void ProcessClient(TcpClient client)
+        public void AuthClient(TcpClient client)
         {
-            // A client has connected. Create the
-            // SslStream using the client's network stream.
-            SslStream sslStream = new SslStream(
+           // A client has connected. Create the
+           // SslStream using the client's network stream.
+           SslStream sslStream = new SslStream(
                 client.GetStream(), false);
             // Authenticate the server but don't require the client to authenticate.
             try
             {
-                sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
-
-
-                // Set timeouts for the read and write to 5 seconds.
-                sslStream.ReadTimeout = 5000;
-                sslStream.WriteTimeout = 5000;
-                // Read a message from the client.
-                Console.WriteLine("Waiting for client message...");
-                string messageData = ReadMessage(sslStream);
-                Console.WriteLine("Received: {0}", messageData);
-
-                // Write a message to the client.
-                byte[] message = Encoding.UTF8.GetBytes("Hello from the server.<EOF>");
-                Console.WriteLine("Sending hello message.");
-                sslStream.Write(message);
+                sslStream.BeginAuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true, OnAuthenticated, sslStream);
             }
             catch (AuthenticationException e)
             {
@@ -67,17 +54,38 @@ namespace ServerLibrary
                 client.Close();
                 return;
             }
-            finally
-            {
-                // The client stream will be closed with the sslStream
-                // because we specified this behavior when creating
-                // the sslStream.
-                sslStream.Close();
-                client.Close();
-            }
         }
 
-        static string ReadMessage(SslStream sslStream)
+        //Function invoked after authentication as server
+        protected void OnAuthenticated(IAsyncResult result)
+        {
+            var sslStream = result.AsyncState as SslStream;
+            int playerID = menager.AddPlayer(new Player());
+            string sendMessage = "";
+            byte[] buffer = new byte[2048];
+            StringBuilder messageData = new StringBuilder();
+            int bytes = -1;
+
+
+            bytes = sslStream.Read(buffer, 0, buffer.Length);
+
+            Decoder decoder = Encoding.UTF8.GetDecoder();
+            char[] chars = new char[decoder.GetCharCount(buffer, 0, bytes)];
+            decoder.GetChars(buffer, 0, bytes, chars, 0);
+            messageData.Append(chars);
+
+            if (messageData.ToString().IndexOf("<EOF>") != -1)
+            {
+                return;
+            }
+
+            sendMessage = menager.ProccesClient(messageData.ToString(), playerID);
+            byte[] message = Encoding.UTF8.GetBytes(sendMessage + "< EOF>");
+            sslStream.Write(message);
+        }
+
+
+        private string ReadMessage(SslStream sslStream)
         {
             // Read the  message sent by the client.
             // The client signals the end of the message using the
@@ -106,7 +114,10 @@ namespace ServerLibrary
             return messageData.ToString();
         }
 
-
+        public ServerConnection()
+        {
+            menager = new ClientProcesing();
+        }
 
 
     }
