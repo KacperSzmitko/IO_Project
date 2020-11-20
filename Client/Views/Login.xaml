@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Client.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="400"
-             Background="White">
+             Background="White" Loaded="UserControl_Loaded">
     
     <Border Padding="75 180 75 180">
         <StackPanel>
@@ -29,7 +29,7 @@
                 <TextBlock Grid.Column="0" Padding="2" FontWeight="Bold" FontSize="16" Text="Hasło"/>
                 <PasswordBox x:Name="PasswordBox" Grid.Column="1" Padding="2" FontSize="16"/>
             </Grid>
-            <Button x:Name="LoginButton" Margin="35 10 35 0" Padding="3" FontWeight="Bold" FontSize="18" Content="Zaloguj się"/>
+            <Button x:Name="LoginButton" Margin="35 10 35 0" Padding="3" FontWeight="Bold" FontSize="18" Content="Zaloguj się" Click="LoginButton_Clicked"/>
             <Button x:Name="RegisterButton" Margin="55 10 55 0" Padding="2" FontWeight="Bold" FontSize="16" Content="Zarejestruj się"/>
 
         </StackPanel>
