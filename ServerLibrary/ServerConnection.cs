@@ -11,17 +11,13 @@ using System.Text;
 
 namespace ServerLibrary
 {
-
-
     class ServerConnection
     {
-        static X509Certificate serverCertificate = null;
         public ClientProcesing menager {get;set;}
-        public void RunServer(string certificate)
+        public void RunServer()
         {
-            serverCertificate = X509Certificate.CreateFromCertFile(certificate);
             // Create a TCP/IP (IPv4) socket and listen for incoming connections.
-            TcpListener listener = new TcpListener(IPAddress.Any, 8080);
+            TcpListener listener = new TcpListener(IPAddress.Any, 12000);
             listener.Start();
             while (true)
             {
@@ -37,23 +33,7 @@ namespace ServerLibrary
            // SslStream using the client's network stream.
            SslStream sslStream = new SslStream(
                 client.GetStream(), false);
-            // Authenticate the server but don't require the client to authenticate.
-            try
-            {
-                sslStream.BeginAuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true, OnAuthenticated, sslStream);
-            }
-            catch (AuthenticationException e)
-            {
-                Console.WriteLine("Exception: {0}", e.Message);
-                if (e.InnerException != null)
-                {
-                    Console.WriteLine("Inner exception: {0}", e.InnerException.Message);
-                }
-                Console.WriteLine("Authentication failed - closing the connection.");
-                sslStream.Close();
-                client.Close();
-                return;
-            }
+         
         }
 
         //Function invoked after authentication as server
