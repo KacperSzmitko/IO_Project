@@ -15,9 +15,6 @@ namespace ServerLibrary
         //Index to Games array
         public int match_id { get; set; }
 
-
- 
-
         public Player()
         {
             this.sessionId = -1;
