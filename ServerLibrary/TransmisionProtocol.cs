@@ -13,8 +13,8 @@ namespace ServerLibrary
         /// </summary>
         /// <param name="result">Reference to string where u want your result to be stored</param>
         /// <param name="succes">Information about client Request</param>
-        /// <param name="option">0 - Default response without any fields  1 - Send data  2 - Information about found game  3 - Game actualization</param>
-        /// <param name="fields">0 - Blank  1 - Data (XMLDocument)  2 - OpponentName OpponentRank  PlayerRank  3 - Score</param>
+        /// <param name="option">0 - Default response without any fields  1 - Send data  2 - Information about found game  3 - Game actualization  4 - Send Session ID </param>  
+        /// <param name="fields">0 - Blank  1 - Data (XMLDocument)  2 - OpponentName OpponentRank  PlayerRank  3 - Score  4 - SessionID</param>  
         public static void CreateServerMessage(ref string result,bool succes, int option, params string[] fields)
         {
             AddField("Response", succes.ToString(), ref result);
@@ -33,6 +33,10 @@ namespace ServerLibrary
                 else if (option == 3)
                 {
                     AddField("Score", fields[0], ref result);
+                }
+                else if (option == 4)
+                {
+                    AddField("SessionID", fields[0], ref result);
                 }
                 else if (option != 0) throw new ArgumentException("Invalid option!");
             }
