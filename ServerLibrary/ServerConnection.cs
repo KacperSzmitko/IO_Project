@@ -50,8 +50,8 @@ namespace ServerLibrary
                 messageData.Append(chars);
 
 
-                //sendMessage = menager.ProccesClient(messageData.ToString(), playerID);
-                sendMessage = "Elo";
+                sendMessage = menager.ProccesClient(messageData.ToString(), playerID);
+
                 byte[] message = Encoding.ASCII.GetBytes(sendMessage);
                 stream.Write(message);
             }
