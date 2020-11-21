@@ -25,13 +25,7 @@ namespace Client
         public string ReadMessage() {
             byte[] buffer = new byte[bufferSize];
             int messageLen = stream.Read(buffer, 0, bufferSize);
-            if (messageLen > 0)
-            {
-                Decoder decoder = Encoding.ASCII.GetDecoder();
-                char[] chars = new char[decoder.GetCharCount(buffer, 0, messageLen)];
-                decoder.GetChars(buffer, 0, messageLen, chars, 0);
-                return new string(chars);
-            }
+            if (messageLen > 0) return Encoding.ASCII.GetString(buffer);
             else return "";
         }
 
