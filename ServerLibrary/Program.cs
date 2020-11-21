@@ -14,7 +14,7 @@ namespace ServerLibrary
             
             
             
-            server.RunServer("./cert.cer");
+            server.RunServer();
         }
     }
 }

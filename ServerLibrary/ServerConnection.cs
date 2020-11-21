@@ -18,17 +18,18 @@ namespace ServerLibrary
     {
         public delegate void ParameterizedThreadStart(TcpClient client);
         public ClientProcesing menager {get;set;}
-        public void RunServer(string certificate)
+        public void RunServer()
         {
             // Create a TCP/IP (IPv4) socket and listen for incoming connections.
-            TcpListener listener = new TcpListener(IPAddress.Any, 14000);
+            TcpListener listener = new TcpListener(IPAddress.Any, 17777);
             listener.Start();
             while (true)
             {
                 Console.WriteLine("Waiting for a client to connect...");
                 TcpClient client = listener.AcceptTcpClient();
                 Thread t = new Thread(AuthClient);
-                AuthClient(client);
+                t.Start(client);
+
             }
         }
 
@@ -56,7 +57,7 @@ namespace ServerLibrary
                 return;
             }
 
-            sendMessage = menager.ProccesClient(messageData.ToString(), playerID);
+            //sendMessage = menager.ProccesClient(messageData.ToString(), playerID);
             byte[] message = Encoding.UTF8.GetBytes(sendMessage + "< EOF>");
             stream.Write(message);
         }
