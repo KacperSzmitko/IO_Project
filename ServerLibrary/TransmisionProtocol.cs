@@ -6,41 +6,7 @@ namespace ServerLibrary
 {
     class TransmisionProtocol
     {
-        /// <summary>
-        /// Function which formats client data by using our transmition protocol
-        /// </summary>
-        /// <param name="result">Reference to string where u want your result to be stored</param>
-        /// <param name="option">*0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove</param>
-        /// <param name="fields">*0-4 : SessionID    5-6 : Username Password   7 : SessionID Move</param>
-        public static void CreateClientMessage(ref string result, int option,params string[] fields)
-        {
-            try
-            {
-                AddField("Option", option.ToString(), ref result);
-                //Logout MatchHistory Rank SearchGame EndGame
-                if (option >= 0 && option <= 4)
-                {
-                    AddField("SessionID", fields[0], ref result);
-                }
-                //Login UserCreate
-                else if (option <= 6)
-                {
-                    AddField("Username", fields[0], ref result);
-                    AddField("Password", fields[1], ref result);
-                }
-                //SendMove
-                else if (option == 7)
-                {
-                    AddField("SessionID", fields[1], ref result);
-                    AddField("Move", fields[1], ref result);
-                }
-                else throw new ArgumentException("Invalid option!");
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                throw new Exception("Invalid number of parametrs");
-            }
-        }
+        
 
         /// <summary>
         /// Function which formats client data by using our transmition protocol
