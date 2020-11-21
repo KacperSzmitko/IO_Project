@@ -25,7 +25,7 @@ namespace Client.Views
         }
 
         private void LoginButton_Clicked(object sender, RoutedEventArgs e) {
-            ServerCommands.LoginCommand(conn, LoginBox.Text, PasswordBox.Password);
+            ServerCommands.LoginCommand(ref conn, LoginBox.Text, PasswordBox.Password);
         }
 
     }
