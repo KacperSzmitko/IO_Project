@@ -11,7 +11,6 @@ namespace ServerLibrary
 
     class ServerConnection
     {
-        public delegate void ParameterizedThreadStart(TcpClient client);
         public ClientProcesing menager {get;set;}
         public void RunServer()
         {
@@ -27,33 +26,46 @@ namespace ServerLibrary
 
             }
         }
-
+        /// <summary>
+        /// Method used to read data from client and send answers from server
+        /// </summary>
+        /// <param name="obj"></param>
         public void ClientConnection(Object obj)
         {
+            TcpClient client = obj as TcpClient;
+            NetworkStream stream = client.GetStream();
+
+            int clientID = menager.AddPlayer(new Player());
             while (true)
             {
-                TcpClient client = obj as TcpClient;
-                NetworkStream stream = client.GetStream();
-
-                int playerID = menager.AddPlayer(new Player());
+                //Read message
                 string sendMessage = "";
                 byte[] buffer = new byte[2048];
                 StringBuilder messageData = new StringBuilder();
                 int bytes = -1;
-
-
                 bytes = stream.Read(buffer, 0, buffer.Length);
 
+                //Decode message
                 Decoder decoder = Encoding.ASCII.GetDecoder();
                 char[] chars = new char[decoder.GetCharCount(buffer, 0, bytes)];
                 decoder.GetChars(buffer, 0, bytes, chars, 0);
                 messageData.Append(chars);
 
-
-                //sendMessage = menager.ProccesClient(messageData.ToString(), playerID);
-                sendMessage = "Elo";
+                //Prepare response
+                sendMessage = menager.ProccesClient(messageData.ToString(), clientID);
                 byte[] message = Encoding.ASCII.GetBytes(sendMessage);
+
+                //Send response
                 stream.Write(message);
+
+                //Found game
+                if(menager.CheckMatchAcctualization(clientID))
+                {
+                    sendMessage = menager.ProccesClient("Option:8$$", clientID);
+                    message = Encoding.ASCII.GetBytes(sendMessage);
+                }
+                stream.Write(message);
+
             }
         }
 

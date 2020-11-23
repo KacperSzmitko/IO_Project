@@ -13,7 +13,7 @@ namespace ServerLibrary
         public int p2Points { get; set; }
         public int pointsToWin { get; set; }
 
-        Gameplay(Player p1,Player p2,int boardSize,int pointsToWin)
+        public Gameplay(Player p1,Player p2,int boardSize,int pointsToWin)
         {
             this.p1 = p1;
             this.p2 = p2;

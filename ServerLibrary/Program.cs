@@ -7,8 +7,9 @@ namespace ServerLibrary
     {
         static void Main(string[] args)
         {
-            ServerConnection server = new ServerConnection(); 
+            ServerConnection server = new ServerConnection();
             server.RunServer();
+
         }
     }
 }
