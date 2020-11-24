@@ -6,13 +6,14 @@ namespace ServerLibrary
 {
     class TransmisionProtocol
     {
+
         /// <summary>
         /// Function which formats server data by using our transmition protocol
         /// </summary>
         /// <param name="result">Reference to string where u want your result to be stored</param>
         /// <param name="succes">Information about client Request</param>
-        /// <param name="option">0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove </param>  
-        /// <param name="fields">0,4,6 - Blank  1,2 - Data (XMLDocument)  3 - OpponentName OpponentRank  PlayerRank  5 - SessionID  7 - Score  </param>  
+        /// <param name="option">0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove 8 - Disconnect </param>  
+        /// <param name="fields">0,4,6 - Blank  1,2 - Data (XMLDocument)  3 - OpponentName OpponentRank  PlayerRank  5 - SessionID Elo  7 - Score  </param>  
         public static string CreateServerMessage(bool succes, int option, params string[] fields)
         {
             string result = "";
@@ -40,6 +41,7 @@ namespace ServerLibrary
                     else if (option == 5)
                     {
                         AddField("SessionID", fields[0], ref result);
+                        AddField("Rank", fields[1], ref result);
                     }
                     //SendMove
                     else if (option == 7)

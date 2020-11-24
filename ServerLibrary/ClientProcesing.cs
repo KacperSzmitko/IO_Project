@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,7 @@ namespace ServerLibrary
         /// <returns>Server response ready to send</returns>
         public string ProccesClient(string message,int clientID)
         {
+            
             string[] fields = message.Split("$$");
             int option = Int32.Parse(fields[0].Split(':')[1]);
 
@@ -56,7 +58,7 @@ namespace ServerLibrary
 
             lock (functions)
             {
-                return functions[option](string.Join("",list), clientID);
+                return functions[option](string.Join("$$",list), clientID);
             }
         }
 
@@ -65,23 +67,28 @@ namespace ServerLibrary
         private string Logout(string msg, int clientID)
         {
             bool succes = true;
-            lock(players)
+            if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.LOGOUT, "Nie jestes zalogowany");
+            lock (players)
             {
-                if(players[clientID].matchID != 0)
+                if(players[clientID].matchID > 0)
                 {
-                    //End game and set this client to lose
+                    lock (games)
+                    {
+                        //End game and set this client to lose
+
+                    }
                 }
                 try
                 {
-                    players.RemoveAt(clientID);
+                    players[clientID].sessionId = null;
                 }
                 catch(ArgumentOutOfRangeException err)
                 {
                     succes = false;
-                    return TransmisionProtocol.CreateServerMessage(succes, 0,err.Message);
+                    return TransmisionProtocol.CreateServerMessage(succes, (int)Options.LOGOUT, err.Message);
                 }
             }
-            return TransmisionProtocol.CreateServerMessage(succes, 0);
+            return TransmisionProtocol.CreateServerMessage(succes, (int)Options.LOGOUT);
         }
 
         //Create answer with client match history
@@ -91,116 +98,50 @@ namespace ServerLibrary
             string playerName = "";
             lock (players)
             {
+                if(players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.MATCH_HISTORY, "Nie jestes zalogowany");
                 try
                 {
                     playerName = players[clientID].name;
                 }
                 catch
                 {
-                    succes = false;
-                    return TransmisionProtocol.CreateServerMessage(succes, 1,"Nie znaleziono uzytkownika!");
+                    return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.MATCH_HISTORY, "Nie znaleziono uzytkownika!");
                 }
             }
-            try { return TransmisionProtocol.CreateServerMessage(succes, 1, dbConnection.GetMatchHistoryData(playerName)); }
-            catch(Exception e) { return TransmisionProtocol.CreateServerMessage(!succes, 1,e.Message); }
+            try { return TransmisionProtocol.CreateServerMessage(succes, (int)Options.MATCH_HISTORY, dbConnection.GetMatchHistoryData(playerName)); }
+            catch(Exception e) { return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.MATCH_HISTORY, e.Message); }
         }
 
 
         private string Rank(string msg, int clientID)
         {
             bool succes = true;
-            try { return TransmisionProtocol.CreateServerMessage(succes, 2, dbConnection.GetRankData()); }
-            catch(Exception e) { return TransmisionProtocol.CreateServerMessage(!succes, 2,e.Message); }
+            lock (players) if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.RANK, "Nie jestes zalogowany");
+            try { return TransmisionProtocol.CreateServerMessage(succes, (int)Options.RANK, dbConnection.GetRankData()); }
+            catch(Exception e) { return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.RANK, e.Message); }
         }
 
 
         private string SearchGame(string msg, int clientID)
         {
             bool succes = true;
-
-            lock(playersWaitingForGame)
+            lock (players) if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.SEARCH_GAME, "Nie jestes zalogowany");
+            lock (playersWaitingForGame)
             {
                 if(playersWaitingForGame.Contains(clientID))
                 {
-                    return TransmisionProtocol.CreateServerMessage(!succes, 3,"Juz wyszukujesz rozgrywkie");
+                    return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.SEARCH_GAME, "Juz wyszukujesz rozgrywkie");
                 }
                 playersWaitingForGame.Add(clientID);
             }
             lock (players) players[clientID].matchID = -1;
-            return TransmisionProtocol.CreateServerMessage(succes, 3);
-        }
-
-        //Returns true if game has been founded for client
-        public bool CheckMatchAcctualization(int clientID)
-        {
-    
-            lock (players)
-            {
-                if(players[clientID].matchActualization)
-                {
-                    players[clientID].matchActualization = false;
-                    return true;
-                }
-                return false;
-            }
-
-        }
-
-        public void MatchMaking()
-        {
-            bool found;
-            List<int> playersWaiting;
-            List<Player> players;
-            while (true)
-            {
-                found = false;
-                playersWaiting = new List<int>(playersWaitingForGame);
-                players = new List<Player>(this.players);
-
-            
-                foreach(int waitingPlayer in playersWaiting)
-                {
-                    for(int i=0;i<playersWaiting.Count;i++)
-                    {
-                        if(waitingPlayer != playersWaiting[i])
-                        {
-                            if(Math.Abs(players[waitingPlayer].elo - players[playersWaiting[i]].elo) <= 150)
-                            {
-                                lock(this.players)
-                                {
-                                    lock (games)
-                                    {
-                                        int matchID = games.Count;
-                                        this.players[waitingPlayer].matchID = matchID;
-                                        this.players[waitingPlayer].matchActualization = true;
-                                        this.players[playersWaiting[i]].matchID = matchID;
-                                        this.players[playersWaiting[i]].matchActualization = true;
-
-                                        games.Add(new Gameplay(this.players[waitingPlayer], this.players[playersWaiting[i]], 9, 5));
-                                    }
-
-                                    var itemToRemove = this.playersWaitingForGame.Single(r => r == waitingPlayer);
-                                    this.playersWaitingForGame.Remove(itemToRemove);
-
-                                    itemToRemove = this.playersWaitingForGame.Single(r => r == playersWaitingForGame[i]);
-                                    this.playersWaitingForGame.Remove(itemToRemove);
-
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (found) break;
-                }
-                Thread.Sleep(5000);
-            }
+            return TransmisionProtocol.CreateServerMessage(succes, (int)Options.SEARCH_GAME);
         }
 
         private string EndGame(string msg, int clientID)
         {
             bool succes = true;
-            return TransmisionProtocol.CreateServerMessage(succes, 4);
+            return TransmisionProtocol.CreateServerMessage(succes, (int)Options.END_GAME);
         }
 
         // Try to login client
@@ -216,23 +157,25 @@ namespace ServerLibrary
 
             string passwordHash = "";
             try { passwordHash = dbConnection.GetUserPassword(username); }
-            catch(Exception e) { return TransmisionProtocol.CreateServerMessage(!succes, 5,e.Message); }
+            catch(Exception e) { return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.LOGIN,e.Message); }
 
             if (Security.VerifyPassword(passwordHash, password))
             {
+                string elo;
                 lock (players)
                 {
                     if (players[clientID].sessionId == null)
                     {
                         players[clientID].GenerateSessionId();
                         players[clientID].elo = dbConnection.GetClientElo(username);
+                        elo = players[clientID].elo.ToString();
                     }
-                    else return (TransmisionProtocol.CreateServerMessage(!succes, 5, "Ten uzytkownik jest juz zalogowany"));
+                    else return (TransmisionProtocol.CreateServerMessage(!succes, (int)Options.LOGIN, "Ten uzytkownik jest juz zalogowany"));
                     sessionId = players[clientID].sessionId;
                 }
-                return TransmisionProtocol.CreateServerMessage(succes, 5, sessionId);
+                return TransmisionProtocol.CreateServerMessage(succes, (int)Options.LOGIN, sessionId,elo);
             }
-            else return TransmisionProtocol.CreateServerMessage(!succes, 5,"Haslo nieprawidlowe");
+            else return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.LOGIN, "Haslo nieprawidlowe");
         }
 
         // Try to create new user 
@@ -243,17 +186,82 @@ namespace ServerLibrary
             string username = fields[0].Split(':')[1];
             string password = fields[1].Split(':')[1];
             if(dbConnection.CheckIfNameExist(username))
-                return TransmisionProtocol.CreateServerMessage(!succes, 6,"Juz istnieje taki uzytkownik!");
+                return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.CREATE_USER,"Juz istnieje taki uzytkownik!");
 
             password = Security.HashPassword(password);
-            if (dbConnection.AddNewUser(username, password)) return TransmisionProtocol.CreateServerMessage(succes, 6);
-            else return TransmisionProtocol.CreateServerMessage(!succes, 6,"Nie udalo sie utworzyc uzytkownika!");
+            if (dbConnection.AddNewUser(username, password)) return TransmisionProtocol.CreateServerMessage(succes, (int)Options.CREATE_USER);
+            else return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.CREATE_USER, "Nie udalo sie utworzyc uzytkownika!");
         }
 
         private string SendMove(string msg, int clientID)
         {
             bool succes = true;
             return msg;
+        }
+
+        public string Disconnect(string msg,int clientID)
+        {
+            bool succes = true;
+            lock (players)
+            {
+                if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.DISCONNECT, "Nie jestes zalogowany");
+                players.RemoveAt(clientID);
+                return "";
+            }
+
+        }
+
+
+        public void MatchMaking()
+        {
+            bool found;
+            List<int> playersWaiting;
+            List<Player> players;
+            while (true)
+            {
+                found = false;
+
+                //Acutalization of using arrays
+                playersWaiting = new List<int>(playersWaitingForGame);
+                players = new List<Player>(this.players);
+
+
+                foreach (int waitingPlayer in playersWaiting)
+                {
+                    for (int i = 0; i < playersWaiting.Count; i++)
+                    {
+                        if (waitingPlayer != playersWaiting[i])
+                        {
+                            if (Math.Abs(players[waitingPlayer].elo - players[playersWaiting[i]].elo) <= 150)
+                            {                                                                      
+                                int matchID = games.Count;
+                                lock (this.players)
+                                {
+                                    this.players[waitingPlayer].matchID = matchID;
+                                    this.players[waitingPlayer].matchActualization = true;
+                                    this.players[playersWaiting[i]].matchID = matchID;
+                                    this.players[playersWaiting[i]].matchActualization = true;
+                                }
+                                lock (games) games.Add(new Gameplay(this.players[waitingPlayer], this.players[playersWaiting[i]], 9, 5));
+
+
+                                lock (this.playersWaitingForGame)
+                                {
+                                    var itemToRemove = this.playersWaitingForGame.Single(r => r == waitingPlayer);
+                                    this.playersWaitingForGame.Remove(itemToRemove);
+
+                                    itemToRemove = this.playersWaitingForGame.Single(r => r == playersWaiting[i]);
+                                    this.playersWaitingForGame.Remove(itemToRemove);
+                                }
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (found) break;
+                }
+                Thread.Sleep(5000);
+            }
         }
 
         public string SendMatch(string msg,int clientID)
@@ -282,7 +290,21 @@ namespace ServerLibrary
             }
         }
 
-        
+
+
+        //Returns true if game has been founded for client
+        public bool CheckMatchAcctualization(int clientID)
+        {
+            lock (players)
+            {
+                if (players[clientID].matchActualization)
+                {
+                    players[clientID].matchActualization = false;
+                    return true;
+                }
+                return false;
+            }
+        }
 
         public int AddPlayer(Player player)
         {
@@ -308,6 +330,7 @@ namespace ServerLibrary
             functions.Add(new Functions(CreateUser));
             functions.Add(new Functions(SendMove));
             functions.Add(new Functions(SendMatch));
+            functions.Add(new Functions(Disconnect));
             matchMaking = new Thread(MatchMaking);
             matchMaking.Start();
         }

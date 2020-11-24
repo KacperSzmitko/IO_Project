@@ -64,7 +64,7 @@ namespace ServerLibrary
 
         public int GetClientElo(string username)
         {
-            string query = "SELECT elo FROM user " + String.Format("WHERE login = '{0}'", username);
+            string query = "SELECT elo FROM user u INNER JOIN ranking r ON r.user_id = u.id " + String.Format("WHERE u.login = '{0}'", username);
             if (this.OpenConnection() == true)
             {
                 //Create Command
@@ -275,6 +275,20 @@ namespace ServerLibrary
                 MySqlCommand cmd = new MySqlCommand(query, connection);
                 //Create a data reader and Execute the command
                 MySqlDataReader dataReader = cmd.ExecuteReader();
+                dataReader.Close();
+
+                query = String.Format("SELECT id FROM user WHERE user.login = '{0}'", username);
+                cmd = new MySqlCommand(query, connection);
+                dataReader = cmd.ExecuteReader();
+                dataReader.Read();
+                string userID = dataReader.GetString(0);
+                dataReader.Close();
+
+                query = String.Format("INSERT INTO ranking(user_id,elo) VALUES('{0}','{1}')", userID, 1000);
+                cmd = new MySqlCommand(query, connection);
+                dataReader = cmd.ExecuteReader();
+                dataReader.Close();
+                this.CloseConnection();
                 return true;
             }
             else
