@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace ServerLibrary
 {
-
     class ServerConnection
     {
         public ClientProcesing menager {get;set;}
@@ -22,11 +21,66 @@ namespace ServerLibrary
             {
                 Console.WriteLine("Waiting for a client to connect...");
                 TcpClient client = listener.AcceptTcpClient();
-                Thread t = new Thread(ClientConnection);
-                t.Start(client);
-
+                //Thread t = new Thread(ClientConnection);
+                //t.Start(client);
+                Task.Run(() => { ClientConnectionAsync(client); });
             }
         }
+
+        public async void ClientConnectionAsync(Object obj)
+        {
+            TcpClient client = obj as TcpClient;
+            NetworkStream stream = client.GetStream();
+            stream.ReadTimeout = 5000;
+            byte[] message;
+
+            int clientID = menager.AddPlayer(new Player());
+            while (true)
+            {
+                //Read message
+                string sendMessage = "";
+                byte[] buffer = new byte[2048];
+                StringBuilder messageData = new StringBuilder();
+                int bytes = -1;
+                try
+                {
+                    bytes = await stream.ReadAsync(buffer, 0, buffer.Length);
+                }
+                catch
+                {
+                    //Found game
+                    if (menager.CheckMatchAcctualization(clientID))
+                    {
+                        sendMessage = menager.ProccesClient("Option:8$$", clientID);
+                        message = Encoding.ASCII.GetBytes(sendMessage);
+                        stream.Write(message);
+                    }
+                    continue;
+                }
+
+                //Decode message
+                Decoder decoder = Encoding.ASCII.GetDecoder();
+                char[] chars = new char[decoder.GetCharCount(buffer, 0, bytes)];
+                decoder.GetChars(buffer, 0, bytes, chars, 0);
+                messageData.Append(chars);
+
+                //Prepare response
+                sendMessage = menager.ProccesClient(messageData.ToString(), clientID);
+
+                //Disconnection
+                if (sendMessage == "")
+                {
+                    message = Encoding.ASCII.GetBytes("Response:True$$");
+                    stream.Write(message);
+                    break;
+                }
+                message = Encoding.ASCII.GetBytes(sendMessage);
+
+                //Send response
+                stream.Write(message);
+            }
+        }
+
         /// <summary>
         /// Method used to read data from client and send answers from server
         /// </summary>

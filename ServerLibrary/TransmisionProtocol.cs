@@ -6,7 +6,6 @@ namespace ServerLibrary
 {
     class TransmisionProtocol
     {
-
         /// <summary>
         /// Function which formats server data by using our transmition protocol
         /// </summary>
