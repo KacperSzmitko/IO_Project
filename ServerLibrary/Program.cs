@@ -9,18 +9,7 @@ namespace ServerLibrary
         static void Main(string[] args)
         {
             
-            ServerConnection server = new ServerConnection();
-            server.RunServer();
-            /*
-            List<string> l = new List<string>
-            {
-                "Option:5$$Username:test$$Password:1234$$",
-                "Option:2$$",
-                "Option:0$$",
-                "Option:2$$",
-            };
-            server.test(l);
-            */
+
             
 
         }

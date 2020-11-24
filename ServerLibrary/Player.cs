@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ServerLibrary
 {
-    class Player
+    public class Player
     {
         private Random random;
         public IPAddress address { get; set; }

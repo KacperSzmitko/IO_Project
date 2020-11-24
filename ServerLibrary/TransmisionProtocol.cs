@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ServerLibrary
 {
-    class TransmisionProtocol
+    public class TransmisionProtocol
     {
         /// <summary>
         /// Function which formats server data by using our transmition protocol

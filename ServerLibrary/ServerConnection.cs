@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ServerLibrary
 {
-    class ServerConnection
+    public class ServerConnection
     {
         public ClientProcesing menager {get;set;}
         public void RunServer()

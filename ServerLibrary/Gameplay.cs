@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ServerLibrary
 {
-    class Gameplay
+    public class Gameplay
     {
         public Player p1{get; set;}
         public Player p2{get; set;}

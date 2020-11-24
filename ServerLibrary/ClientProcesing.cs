@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using DbLibrary;
+using Shared;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace ServerLibrary
     /// Class which process all client messages sended here from ServerConnection,
     /// and gives back server response ready to send to client
     /// </summary>
-    class ClientProcesing
+    public class ClientProcesing
     {
         //TODO SearchGame  EndGame  SendMove
 
@@ -37,7 +38,7 @@ namespace ServerLibrary
 
         public List<int> playersWaitingForGame { get; set; }
 
-        public DbConnection dbConnection { get; set; }
+        public DbMethods dbConnection { get; set; }
 
         
 
@@ -320,7 +321,7 @@ namespace ServerLibrary
             games = new List<Gameplay>();
             playersWaitingForGame = new List<int>();
             functions = new List<Functions>();
-            dbConnection = new DbConnection();
+            dbConnection = new DbMethods();
             functions.Add(new Functions(Logout));
             functions.Add(new Functions(MatchHistory));
             functions.Add(new Functions(Rank));

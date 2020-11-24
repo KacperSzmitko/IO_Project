@@ -1,67 +1,13 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using DbLibrary;
-using MySql.Data.MySqlClient;
 
-namespace ServerLibrary
+namespace DbLibrary 
 {
-    class DbConnection
+    public class DbMethods : DbConnection
     {
-        private MySqlConnection connection;
-        private string server;
-        private string database;
-        private string uid;
-        private string password;
-        public DbConnection()
-        {
-            Initialize();
-        }
-
-        //Initialize values
-        private void Initialize()
-        {
-            server = "10.8.0.1";
-            database = "projekt_io";
-            uid = "user_io";
-            password = "DN8OHj8mUkNmXBRm";
-            string connectionString;
-            connectionString = "SERVER=" + server + ";" + "DATABASE=" +
-            database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
-
-            connection = new MySqlConnection(connectionString);
-        }
-
-        //open connection to database
-        private bool OpenConnection()
-        {
-            try
-            {
-                connection.Open();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        //Close connection
-        private bool CloseConnection()
-        {
-            try
-            {
-                connection.Close();
-                return true;
-            }
-            catch (MySqlException ex)
-            {
-                return false;
-            }
-        }
-
-
         public int GetClientElo(string username)
         {
             string query = "SELECT elo FROM user u INNER JOIN ranking r ON r.user_id = u.id " + String.Format("WHERE u.login = '{0}'", username);
@@ -87,39 +33,7 @@ namespace ServerLibrary
             }
             return 0;
         }
-
-        public bool CheckIfNameExist(string username)
-        {
-            string query = string.Format("SELECT login FROM user WHERE login = '{0}'", username);
-            if (this.OpenConnection() == true)
-            {
-                //Create Command
-                MySqlCommand cmd = new MySqlCommand(query, connection);
-                //Create a data reader and Execute the command
-                MySqlDataReader dataReader = cmd.ExecuteReader();
-
-                try
-                {
-                    dataReader.Read();
-                    string password = dataReader.GetString(0);
-                }
-                catch
-                {
-                    this.CloseConnection();
-                    return false;
-                }
-                //close Data Reader
-                dataReader.Close();
-                //close Connection
-                this.CloseConnection();
-                return true;
-            }
-            else
-            {
-                throw new Exception("Nie mozna polaczyc sie z baza danych");
-
-            }
-        }
+       
 
         public string GetUserPassword(string username)
         {
@@ -295,7 +209,39 @@ namespace ServerLibrary
             {
                 return false;
             }
+        }
 
+        public bool CheckIfNameExist(string username)
+        {
+            string query = string.Format("SELECT login FROM user WHERE login = '{0}'", username);
+            if (this.OpenConnection() == true)
+            {
+                //Create Command
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                //Create a data reader and Execute the command
+                MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                try
+                {
+                    dataReader.Read();
+                    string password = dataReader.GetString(0);
+                }
+                catch
+                {
+                    this.CloseConnection();
+                    return false;
+                }
+                //close Data Reader
+                dataReader.Close();
+                //close Connection
+                this.CloseConnection();
+                return true;
+            }
+            else
+            {
+                throw new Exception("Nie mozna polaczyc sie z baza danych");
+
+            }
         }
     }
 }
