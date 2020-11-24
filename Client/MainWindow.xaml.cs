@@ -21,12 +21,8 @@ namespace Client
             InitializeComponent();
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e) {
-            
-        }
-
-        private void RegisterButton_Click(object sender, RoutedEventArgs e) {
-
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
+            DataContext = new ViewModels.Login();
         }
     }
 }
