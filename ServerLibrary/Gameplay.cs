@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace ServerLibrary
 {
     public class Gameplay
@@ -22,7 +23,8 @@ namespace ServerLibrary
             p1Points = 0;
             p2Points = 0;
         }
-
+        
         ////// PUT GAME LOGIC HERE
+        ///
     }
 }

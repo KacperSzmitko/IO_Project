@@ -3,8 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Tic_Tac_Toe
-{
-    class StartServer
+{/*public Player p1{get; set;}
+        public Player p2{get; set;}
+        public string[] board { get; set; }
+        public int p1Points { get; set; }
+        public int p2Points { get; set; }
+        public int pointsToWin { get; set; }
+
+        public Gameplay(Player p1,Player p2,int boardSize,int pointsToWin)
+        {
+            this.p1 = p1;
+            this.p2 = p2;
+            this.board = new string[boardSize];
+            this.pointsToWin = pointsToWin;
+            p1Points = 0;
+            p2Points = 0;
+
+
+
+        } */
+	
+	//potrzebne metody 
+	//1.on mi daje ktory gracz na jaka pozycje tablicy wstawil i wtedy ma zwrocic 
+	class StartServer
     {
 		static void Main(string[] args)
 		{
