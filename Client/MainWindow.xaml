@@ -3,14 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Client" xmlns:viewmodels="clr-namespace:Client.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+        xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Tic Tac Toe" Height="600" Width="400" 
+        Title="Tic Tac Toe" Height="600" Width="400"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         >
-
-
-
+    
     <ContentControl Content="{Binding SelectedViewModel}"/>
 </Window>

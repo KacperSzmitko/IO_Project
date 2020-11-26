@@ -18,7 +18,15 @@ namespace Client.Views
     {
         public RegisterView() {
             InitializeComponent();
-            DataContext = new RegisterViewModel();
+            this.DataContext = new RegisterViewModel();
+        }
+
+        private void PasswordBox1_PasswordChanged(object sender, RoutedEventArgs e) {
+            if (this.DataContext != null) { ((RegisterViewModel)this.DataContext).Pass1 = ((PasswordBox)sender).Password; }
+        }
+
+        private void PasswordBox2_PasswordChanged(object sender, RoutedEventArgs e) {
+            if (this.DataContext != null) { ((RegisterViewModel)this.DataContext).Pass2 = ((PasswordBox)sender).Password; }
         }
     }
 }

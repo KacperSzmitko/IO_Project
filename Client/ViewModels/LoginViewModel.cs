@@ -11,8 +11,5 @@ namespace Client.ViewModels
     {
         
 
-        public LoginViewModel() {
-            
-        }
     }
 }
