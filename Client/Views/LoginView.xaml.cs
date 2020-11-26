@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Client.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -11,15 +12,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Client.Views
+namespace Client.Views 
 {
-    /// <summary>
-    /// Logika interakcji dla klasy Register.xaml
-    /// </summary>
-    public partial class Register : UserControl
+    public partial class LoginView : UserControl 
     {
-        public Register() {
+        public LoginView() {
             InitializeComponent();
+            DataContext = new LoginViewModel();
         }
     }
 }

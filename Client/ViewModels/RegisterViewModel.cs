@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Client.ViewModels 
+namespace Client.ViewModels
 {
-    public class Login 
+    public class RegisterViewModel : BaseViewModel
     {
-
     }
 }
