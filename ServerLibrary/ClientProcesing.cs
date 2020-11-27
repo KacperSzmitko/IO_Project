@@ -241,6 +241,16 @@ namespace ServerLibrary
         }
 
 
+        public string CheckUserName(string msg,int clientID)
+        {
+            bool succes = true;
+            string[] fields = msg.Split("$$");
+            string username = fields[0].Split(':')[1];
+            if (dbConnection.CheckIfNameExist(username))
+                return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.CHECK_USER_NAME);
+            return TransmisionProtocol.CreateServerMessage(succes, (int)Options.CHECK_USER_NAME);
+        }
+
         public void MatchMaking()
         {
             bool found;
@@ -361,6 +371,7 @@ namespace ServerLibrary
             functions.Add(new Functions(SendMove));
             functions.Add(new Functions(SendMatch));
             functions.Add(new Functions(Disconnect));
+            functions.Add(new Functions(CheckUserName));
             matchMaking = new Thread(MatchMaking);
             matchMaking.Start();
         }
