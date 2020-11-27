@@ -15,7 +15,7 @@ namespace ServerLibrary
     /// </summary>
     public class ClientProcesing
     {
-        //TODO SearchGame  EndGame  SendMove
+        //TODO  EndGame  SendMove
 
         /// <summary>
         /// Delegate which represents function used to procces client data
@@ -197,7 +197,35 @@ namespace ServerLibrary
         private string SendMove(string msg, int clientID)
         {
             bool succes = true;
-            return msg;
+            int matchID;
+            lock (players)
+            {
+                if(players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.SEND_MOVE, "Nie jestes zalogowany!");
+                if(players[clientID].matchID < 0) return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.SEND_MOVE, "Nie jestes w rozgrywce");
+                matchID = players[clientID].matchID;
+            }
+            string[] fields = msg.Split("$$");
+            string f = fields[1].Split(":")[1];
+            int move = Int32.Parse(f);
+
+            
+            lock(games[matchID])
+            {
+                lock (players)
+                {
+                    succes = games[matchID].move(move, players[clientID]);
+
+                    if (succes)
+                    {
+                        if(players[clientID].name == games[matchID].p1.name)
+                        return TransmisionProtocol.CreateServerMessage(succes, (int)Options.SEND_MOVE, String.Format("{0}-{1}",
+                            games[matchID].p1Points, games[matchID].p2Points));
+                        else return TransmisionProtocol.CreateServerMessage(succes, (int)Options.SEND_MOVE, String.Format("{1}-{0}",
+                            games[matchID].p1Points, games[matchID].p2Points));
+                    }
+                    return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.SEND_MOVE, "Niedozwolony ruch");
+                }
+            }
         }
 
         public string Disconnect(string msg,int clientID)
@@ -265,6 +293,7 @@ namespace ServerLibrary
             }
         }
 
+        //Send founded match info
         public string SendMatch(string msg,int clientID)
         {
             bool succes = true;
@@ -285,9 +314,9 @@ namespace ServerLibrary
             {
                 if(p1.name == playerName)
                 {
-                    return (TransmisionProtocol.CreateServerMessage(succes, 4, p2.name, p2.elo.ToString(), p1.elo.ToString()));
+                    return (TransmisionProtocol.CreateServerMessage(succes, (int)Options.SEARCH_GAME, p2.name, p2.elo.ToString(), p1.elo.ToString()));
                 }
-                return (TransmisionProtocol.CreateServerMessage(succes, 4, p1.name, p1.elo.ToString(), p2.elo.ToString()));
+                return (TransmisionProtocol.CreateServerMessage(succes, (int)Options.SEARCH_GAME, p1.name, p1.elo.ToString(), p2.elo.ToString()));
             }
         }
 
