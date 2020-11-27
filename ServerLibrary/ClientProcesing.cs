@@ -50,8 +50,8 @@ namespace ServerLibrary
         public string ProccesClient(string message,int clientID)
         {
             
-            string[] fields = message.Split("$$");
-            int option = Int32.Parse(fields[0].Split(':')[1]);
+            string[] fields = message.Split("$$", StringSplitOptions.RemoveEmptyEntries);
+            int option = Int32.Parse(fields[0].Split(':', StringSplitOptions.RemoveEmptyEntries)[1]);
 
             //Remove option
             var list = new List<string>(fields);
@@ -150,9 +150,9 @@ namespace ServerLibrary
         public string Login(string msg, int clientID)
         {
             bool succes = true;
-            string[] fields = msg.Split("$$");
-            string username = fields[0].Split(':')[1];
-            string password = fields[1].Split(':')[1];
+            string[] fields = msg.Split("$$", StringSplitOptions.RemoveEmptyEntries);
+            string username = fields[0].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
+            string password = fields[1].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
 
             string sessionId = "";
 
@@ -183,9 +183,9 @@ namespace ServerLibrary
         public string CreateUser(string msg, int clientID)
         {
             bool succes = true;
-            string[] fields = msg.Split("$$");
-            string username = fields[0].Split(':')[1];
-            string password = fields[1].Split(':')[1];
+            string[] fields = msg.Split("$$", StringSplitOptions.RemoveEmptyEntries);
+            string username = fields[0].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
+            string password = fields[1].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
             if(dbConnection.CheckIfNameExist(username))
                 return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.CREATE_USER,"Juz istnieje taki uzytkownik!");
 
@@ -204,8 +204,8 @@ namespace ServerLibrary
                 if(players[clientID].matchID < 0) return TransmisionProtocol.CreateServerMessage(!succes, (int)Options.SEND_MOVE, "Nie jestes w rozgrywce");
                 matchID = players[clientID].matchID;
             }
-            string[] fields = msg.Split("$$");
-            string f = fields[1].Split(":")[1];
+            string[] fields = msg.Split("$$", StringSplitOptions.RemoveEmptyEntries);
+            string f = fields[1].Split(":", StringSplitOptions.RemoveEmptyEntries)[1];
             int move = Int32.Parse(f);
 
             
@@ -369,9 +369,9 @@ namespace ServerLibrary
             functions.Add(new Functions(Login));
             functions.Add(new Functions(CreateUser));
             functions.Add(new Functions(SendMove));
-            functions.Add(new Functions(SendMatch));
             functions.Add(new Functions(Disconnect));
             functions.Add(new Functions(CheckUserName));
+            functions.Add(new Functions(SendMatch));
             matchMaking = new Thread(MatchMaking);
             matchMaking.Start();
         }

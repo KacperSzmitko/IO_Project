@@ -109,7 +109,7 @@ namespace ServerLibrary
                     //Found game
                     if (menager.CheckMatchAcctualization(clientID))
                     {
-                        sendMessage = menager.ProccesClient("Option:8$$", clientID);
+                        sendMessage = menager.ProccesClient("Option:10$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);
                         stream.Write(message);
                     }
