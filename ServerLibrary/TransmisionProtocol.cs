@@ -16,14 +16,14 @@ namespace ServerLibrary
         public static string CreateServerMessage(bool succes, int option, params string[] fields)
         {
             string result = "";
-            AddField("Response", succes.ToString(), ref result);
+            AddField("Response", (succes ? 1 : 0).ToString(), ref result);
             // We got it! Prepare answer from given data
             if (succes)
             {
                 try
                 {
                     // Options can by only in range of <0,7>
-                    if (option > 7 || option < 0) throw new ArgumentException("Invalid option!");
+                    if (option > 10 || option < 0) throw new ArgumentException("Invalid option!");
                     //GetMatchHisotry and GetRank
                     if (option == 1 || option == 2)
                     {
@@ -55,7 +55,7 @@ namespace ServerLibrary
                 }
             }
             //Tell client what went wrong
-            else
+            else if (option != 9)
             {
                 AddField("Error", fields[0], ref result);
             }

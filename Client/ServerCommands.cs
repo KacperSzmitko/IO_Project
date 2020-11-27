@@ -47,13 +47,13 @@ namespace Client
         }
 
         private static string[,] GetArgArrayFromResponse(string response) {
-            string[] args = response.Split("&&");
+            string[] args = response.Split("$$", StringSplitOptions.RemoveEmptyEntries);
             int numOfArgs = args.Length;
 
             string[,] argArray = new string[numOfArgs, 2];
 
             for (int i = 0; i < numOfArgs; i++) {
-                string[] arg = args[i].Split(":");
+                string[] arg = args[i].Split(":", StringSplitOptions.RemoveEmptyEntries);
                 argArray[i, 0] = arg[0];
                 argArray[i, 1] = arg[1];
             }
@@ -63,13 +63,15 @@ namespace Client
 
         public struct LoginCommandResponse 
         {
-            public readonly string sessionID;
             public readonly int result;
+            public readonly string sessionID;
             public LoginCommandResponse(int result, string sessionID) {
                 this.result = result;
                 this.sessionID = sessionID;
             }
         }
+
+
 
 
 
