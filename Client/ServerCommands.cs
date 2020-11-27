@@ -6,6 +6,19 @@ namespace Client
 {
     class ServerCommands
     {
+
+        public class LoginCommandResponse
+        {
+            public readonly int error;
+            public readonly string sessionID;
+            public readonly string elo;
+            public LoginCommandResponse(int error, string sessionID, string elo) {
+                this.error = error;
+                this.sessionID = sessionID;
+                this.elo = elo;
+            }
+        }
+
         private static string AddField(string fieldName, string value) {
             return fieldName + ":" + value + "$$";
         }
@@ -61,25 +74,11 @@ namespace Client
             return argArray;
         }
 
-        public struct LoginCommandResponse 
-        {
-            public readonly int result;
-            public readonly string sessionID;
-            public LoginCommandResponse(int result, string sessionID) {
-                this.result = result;
-                this.sessionID = sessionID;
-            }
-        }
-
-
-
-
-
         public static LoginCommandResponse LoginCommand(ref ServerConnection connection, string username, string password) {
             string command = CreateClientMessage(5, username, password);
             connection.SendMessage(command);
             string[,] argArray = GetArgArrayFromResponse(connection.ReadMessage());
-            return new LoginCommandResponse(Int32.Parse(argArray[0, 1]), argArray[1, 1]);
+            return new LoginCommandResponse(Int32.Parse(argArray[0, 1]), argArray[1, 1], argArray[1, 2]);
         }
 
         public static int CheckUsernameExistCommand(ref ServerConnection connection, string username) {
