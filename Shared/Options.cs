@@ -14,6 +14,7 @@ namespace Shared
         SEND_MOVE = 7, //           SessionID:<>$$Move:<>$$                       Result:<>$$Score:np.1-0$$ gdzie pierwsza jest klienta ktroy wyslal ruch
         DISCONNECT = 8, //Ready                                                   Result:<>$$
         CHECK_USER_NAME = 9 //      Username:<>$$                                 Result:<>$$
+
     }
 
 }

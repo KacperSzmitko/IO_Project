@@ -369,9 +369,9 @@ namespace ServerLibrary
             functions.Add(new Functions(Login));
             functions.Add(new Functions(CreateUser));
             functions.Add(new Functions(SendMove));
-            functions.Add(new Functions(SendMatch));
             functions.Add(new Functions(Disconnect));
             functions.Add(new Functions(CheckUserName));
+            functions.Add(new Functions(SendMatch));
             matchMaking = new Thread(MatchMaking);
             matchMaking.Start();
         }
