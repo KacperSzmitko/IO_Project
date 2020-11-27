@@ -8,15 +8,9 @@ namespace ServerLibrary
     {
         static void Main(string[] args)
         {
-            
-
-
-
-            ServerConnection server = new ServerConnection();
-            server.RunServer();
-
-
-
+            string g = TransmisionProtocol.CreateServerMessage(1, 1, "Elo");
+            //ServerConnection server = new ServerConnection();
+            //server.RunServer();
         }
     }
 }
