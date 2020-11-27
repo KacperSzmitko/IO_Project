@@ -31,7 +31,7 @@
                 <PasswordBox x:Name="PasswordBox" Grid.Column="1" Padding="2" FontSize="16"/>
             </Grid>
             <Button x:Name="LoginButton" Margin="35 10 35 0" Padding="3" FontWeight="Bold" FontSize="18" Content="Zaloguj się" />
-            <Button x:Name="GoToRegisterButton" Margin="55 10 55 0" Padding="2" FontWeight="Bold" FontSize="16" Content="Zarejestruj się" Command="{Binding DataContext.UpdateViewCommand, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}, Mode=OneWay}" CommandParameter="Register"/>
+            <Button x:Name="GoToRegisterButton" Margin="55 10 55 0" Padding="2" FontWeight="Bold" FontSize="16" Content="Zarejestruj się" Command="{Binding UpdateViewCommand}" CommandParameter="Register"/>
 
         </StackPanel>
     </Border>

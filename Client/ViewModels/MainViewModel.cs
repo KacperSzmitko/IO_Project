@@ -8,21 +8,23 @@ namespace Client.ViewModels
 {
     class MainViewModel : BaseViewModel
     {
-        private BaseViewModel _selectedViewModel;
-
-        public BaseViewModel SelectedViewModel {
-            get { return _selectedViewModel; }
-            set { 
-                _selectedViewModel = value;
-                OnPropertyChanged(nameof(SelectedViewModel));
+        public BaseViewModel CurrentViewModel {
+            get {
+                return Navigator.CurrentViewModel;
+            }
+            set {
+                Navigator.CurrentViewModel = value;
             }
         }
 
-        public ICommand UpdateViewCommand { get; set; }
-
-        public MainViewModel() {
-            _selectedViewModel = new LoginViewModel();
-            UpdateViewCommand = new UpdateViewCommand(this);
+        public MainViewModel(Navigator navigator) : base(navigator) {
+            
+            this.CurrentViewModel = new LoginViewModel(navigator);
         }
+
+        public void OnViewChanged(object source, EventArgs args) {
+            OnPropertyChanged(nameof(CurrentViewModel));
+        }
+
     }
 }

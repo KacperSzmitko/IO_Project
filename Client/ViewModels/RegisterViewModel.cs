@@ -104,7 +104,7 @@ namespace Client.ViewModels
 
 
 
-        public RegisterViewModel() {
+        public RegisterViewModel(Navigator navigator) : base(navigator) {
             model = new RegisterModel();
         }
 

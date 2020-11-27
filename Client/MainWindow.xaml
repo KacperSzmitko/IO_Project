@@ -9,6 +9,6 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         >
-    
-    <ContentControl Content="{Binding SelectedViewModel}"/>
+
+    <ContentControl Content="{Binding CurrentViewModel}"/>
 </Window>

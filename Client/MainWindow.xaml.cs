@@ -20,7 +20,10 @@ namespace Client
     {
         public MainWindow() {
             InitializeComponent();
-            DataContext = new MainViewModel();
+            Navigator navigator = new Navigator();
+            MainViewModel viewModel = new MainViewModel(navigator);
+            navigator.ViewChanged += viewModel.OnViewChanged;
+            DataContext = viewModel;
         }
     }
 }

@@ -10,10 +10,10 @@ namespace Client.Commands
     {
         public event EventHandler CanExecuteChanged;
 
-        private MainViewModel viewModel;
+        private Navigator navigator;
 
-        public UpdateViewCommand(MainViewModel viewModel) {
-            this.viewModel = viewModel;
+        public UpdateViewCommand(Navigator navigator) {
+            this.navigator = navigator;
         }
 
         public bool CanExecute(object parameter) {
@@ -21,8 +21,8 @@ namespace Client.Commands
         }
 
         public void Execute(object parameter) {
-            if (parameter.ToString() == "Login") viewModel.SelectedViewModel = new LoginViewModel();
-            else if (parameter.ToString() == "Register") viewModel.SelectedViewModel = new RegisterViewModel();
+            if (parameter.ToString() == "Login") navigator.CurrentViewModel = new LoginViewModel(navigator);
+            else if (parameter.ToString() == "Register") navigator.CurrentViewModel = new RegisterViewModel(navigator);
         }
     }
 }

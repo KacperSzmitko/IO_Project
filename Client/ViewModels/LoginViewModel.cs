@@ -9,7 +9,10 @@ namespace Client.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
-        
+
+        public LoginViewModel(Navigator navigator) : base(navigator) {
+            
+        }
 
     }
 }

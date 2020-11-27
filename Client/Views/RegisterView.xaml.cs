@@ -18,7 +18,6 @@ namespace Client.Views
     {
         public RegisterView() {
             InitializeComponent();
-            this.DataContext = new RegisterViewModel();
         }
 
         private void PasswordBox1_PasswordChanged(object sender, RoutedEventArgs e) {
