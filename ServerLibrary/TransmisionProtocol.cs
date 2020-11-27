@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,13 +14,14 @@ namespace ServerLibrary
         /// <param name="succes">Information about client Request</param>
         /// <param name="option">0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove 8 - Disconnect </param>  
         /// <param name="fields">0,4,6 - Blank  1,2 - Data (XMLDocument)  3 - OpponentName OpponentRank  PlayerRank  5 - SessionID Elo  7 - Score  </param>  
-        public static string CreateServerMessage(bool succes, int option, params string[] fields)
+        public static string CreateServerMessage(int errorCode, int option, params string[] fields)
         {
             string result = "";
-            AddField("Response", (succes ? 1 : 0).ToString(), ref result);
+            
             // We got it! Prepare answer from given data
-            if (succes)
+            if (errorCode == 0)
             {
+                AddField("Error", ErrorCodes.NO_ERROR.ToString(), ref result);
                 try
                 {
                     // Options can by only in range of <0,7>
@@ -55,9 +57,9 @@ namespace ServerLibrary
                 }
             }
             //Tell client what went wrong
-            else if (option != 9)
+            else
             {
-                AddField("Error", fields[0], ref result);
+                AddField("Error", errorCode.ToString(), ref result);
             }
             return result;
 
