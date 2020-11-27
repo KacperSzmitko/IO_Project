@@ -10,7 +10,7 @@ namespace Client.ViewModels
     public class LoginViewModel : BaseViewModel
     {
 
-        public LoginViewModel(Navigator navigator) : base(navigator) {
+        public LoginViewModel(ServerConnection connection, Navigator navigator) : base(connection, navigator) {
             
         }
 

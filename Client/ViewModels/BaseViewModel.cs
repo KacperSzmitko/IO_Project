@@ -9,14 +9,16 @@ namespace Client.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public Navigator Navigator { get; set; }
+        protected ServerConnection connection;
+        protected Navigator navigator;
         public ICommand UpdateViewCommand { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public BaseViewModel(Navigator navigator) {
-            this.Navigator = navigator;
-            this.UpdateViewCommand = new UpdateViewCommand(this.Navigator);
+        public BaseViewModel(ServerConnection connection, Navigator navigator) {
+            this.connection = connection;
+            this.navigator = navigator;
+            this.UpdateViewCommand = new UpdateViewCommand(this.connection, this.navigator);
         }
 
         protected void OnPropertyChanged(string propertyName) {

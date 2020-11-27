@@ -4,7 +4,10 @@ using System.Text;
 
 namespace Client.Models
 {
-    class LoginModel
+    class LoginModel : BaseModel
     {
+        public LoginModel(ServerConnection connection) : base(connection) {
+
+        }
     }
 }

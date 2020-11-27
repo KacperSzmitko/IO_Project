@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Client"
              xmlns:viewmodels="clr-namespace:Client.ViewModels"
              xmlns:views="clr-namespace:Client.Views"
+             DispatcherUnhandledException="Application_DispatcherUnhandledException"
              Startup="Start"
              >
 

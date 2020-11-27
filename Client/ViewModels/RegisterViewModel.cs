@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Client.ViewModels
 {
@@ -9,24 +10,26 @@ namespace Client.ViewModels
     {
         private RegisterModel model;
 
-        private string login;
+        private string username;
         private string pass1;
         private string pass2;
 
-        public bool GoodLogin { get; set; }
+        public bool GoodUsername { get; set; }
+        public bool UsernameAvailable { get; set; }
         public bool GoodPass1 { get; set; }
         public bool GoodPass2 { get; set; }
 
-        public string Login {
-            get { return login; }
+        public string Username {
+            get { return username; }
             set {
-                if (value != login) {
-                    login = value;
-                    if (model.CheckLoginText(login)) GoodLogin = true;
-                    else GoodLogin = false;
-                    OnPropertyChanged(nameof(Login));
-                    OnPropertyChanged(nameof(LoginBoxColor));
-                    OnPropertyChanged(nameof(LoginInfoVisibility));
+                if (value != username) {
+                    username = value;
+                    if (model.CheckUsernameText(username)) GoodUsername = true;
+                    else GoodUsername = false;
+                    OnPropertyChanged(nameof(Username));
+                    OnPropertyChanged(nameof(UsernameBoxColor));
+                    OnPropertyChanged(nameof(UsernameInfoVisibility));
+                    if (GoodUsername) _ = UpdateIfUsernameExistAsync();
                 }
             }
         }
@@ -49,7 +52,7 @@ namespace Client.ViewModels
             set {
                 if (value != pass2) {
                     pass2 = value;
-                    if (model.CheckPasswordText(pass2) && model.CheckIfPasswordsAreEqual(Pass1, pass2)) GoodPass2 = true;
+                    if (model.CheckPasswordText(pass2) && model.CheckPasswordsAreEqual(Pass1, pass2)) GoodPass2 = true;
                     else GoodPass2 = false;
                     OnPropertyChanged(nameof(Pass2BoxColor));
                     OnPropertyChanged(nameof(Pass2InfoVisibility));
@@ -57,10 +60,10 @@ namespace Client.ViewModels
             }
         }
 
-        public string LoginBoxColor {
+        public string UsernameBoxColor {
             get {
-                if (String.IsNullOrEmpty(Login)) return "White";
-                else if (!GoodLogin) return "Salmon";
+                if (String.IsNullOrEmpty(Username)) return "White";
+                else if (!GoodUsername || !UsernameAvailable) return "Salmon";
                 else return "LightGreen";
             }
         }
@@ -81,9 +84,16 @@ namespace Client.ViewModels
             }
         }
 
-        public string LoginInfoVisibility {
+        public string UsernameInfoVisibility {
             get {
-                if (!String.IsNullOrEmpty(Login) && !GoodLogin) return "Visible";
+                if (!String.IsNullOrEmpty(Username) && !GoodUsername) return "Visible";
+                else return "Collapsed";
+            }
+        }
+
+        public string UsernameInfoAvailabilityVisibility {
+            get {
+                if (!String.IsNullOrEmpty(Username) && GoodUsername && !UsernameAvailable) return "Visible";
                 else return "Collapsed";
             }
         }
@@ -102,10 +112,23 @@ namespace Client.ViewModels
             }
         }
 
+        public RegisterViewModel(ServerConnection connection, Navigator navigator) : base(connection, navigator) {
+            model = new RegisterModel(this.connection);
+            this.GoodUsername = false;
+            this.UsernameAvailable = false;
+            this.GoodPass1 = false;
+            this.GoodPass2 = false;
+        }
 
-
-        public RegisterViewModel(Navigator navigator) : base(navigator) {
-            model = new RegisterModel();
+        private async Task UpdateIfUsernameExistAsync() {
+            bool exists = await Task.Run(() => model.CheckUsernameExist(Username));
+            if (exists) {
+                UsernameAvailable = false;
+                GoodUsername = false;
+                OnPropertyChanged(nameof(UsernameBoxColor));
+                OnPropertyChanged(nameof(UsernameInfoVisibility));
+            }
+            else UsernameAvailable = true;
         }
 
 

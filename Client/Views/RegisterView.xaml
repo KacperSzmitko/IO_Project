@@ -26,8 +26,9 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Padding="2" FontWeight="Bold" FontSize="16" Text="Login"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Padding="2" FontSize="16" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Background="{Binding LoginBoxColor}"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Padding="2" FontSize="12" Text="Minimum 3 znaki" Visibility="{Binding LoginInfoVisibility}" Foreground="Crimson" d:Visibility="Collapsed"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Padding="2" FontSize="16" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Background="{Binding UsernameBoxColor}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Padding="2" FontSize="12" Text="Minimum 3 znaki" Visibility="{Binding UsernameInfoVisibility}" Foreground="Crimson" d:Visibility="Collapsed"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Padding="2" FontSize="12" Text="Użytkownik o takiej nazwie już istnieje" Visibility="{Binding UsernameInfoAvailabilityVisibility}" Foreground="Crimson" d:Visibility="Collapsed"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="0 10 0 0" Padding="2" FontWeight="Bold" FontSize="16" Text="Hasło"/>
                 <PasswordBox Grid.Row="2" Grid.Column="1" Margin="0 10 0 0" Padding="2" FontSize="16" PasswordChanged="PasswordBox1_PasswordChanged" Background="{Binding Pass1BoxColor}"/>

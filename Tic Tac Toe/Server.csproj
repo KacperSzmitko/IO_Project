@@ -6,4 +6,8 @@
     <RootNamespace>Tic_Tac_Toe</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

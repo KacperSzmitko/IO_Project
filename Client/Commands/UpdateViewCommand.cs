@@ -10,9 +10,11 @@ namespace Client.Commands
     {
         public event EventHandler CanExecuteChanged;
 
+        private ServerConnection connection;
         private Navigator navigator;
 
-        public UpdateViewCommand(Navigator navigator) {
+        public UpdateViewCommand(ServerConnection connection, Navigator navigator) {
+            this.connection = connection;
             this.navigator = navigator;
         }
 
@@ -21,8 +23,8 @@ namespace Client.Commands
         }
 
         public void Execute(object parameter) {
-            if (parameter.ToString() == "Login") navigator.CurrentViewModel = new LoginViewModel(navigator);
-            else if (parameter.ToString() == "Register") navigator.CurrentViewModel = new RegisterViewModel(navigator);
+            if (parameter.ToString() == "Login") navigator.CurrentViewModel = new LoginViewModel(connection, navigator);
+            else if (parameter.ToString() == "Register") navigator.CurrentViewModel = new RegisterViewModel(connection, navigator);
         }
     }
 }

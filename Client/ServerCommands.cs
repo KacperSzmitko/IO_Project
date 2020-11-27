@@ -14,9 +14,9 @@ namespace Client
         /// Function which formats client data by using our transmition protocol
         /// </summary>
         /// <param name="result">Reference to string where u want your result to be stored</param>
-        /// <param name="option">*0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove</param>
-        /// <param name="fields">*0-4 : SessionID    5-6 : Username Password   7 : SessionID Move</param>
-        public static string CreateClientMessage(int option, params string[] fields) {
+        /// <param name="option">*0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove  8 - Disconnect  9 - CheckUserName </param>
+        /// <param name="fields">*0-4 : SessionID    5-6 : Username Password   7 : SessionID Move   9 : Username</param>
+        private static string CreateClientMessage(int option, params string[] fields) {
             string result = "";
             try {
                 result += AddField("option", option.ToString());
@@ -31,8 +31,11 @@ namespace Client
                 }
                 //SendMove
                 else if (option == 7) {
-                    result += AddField("sessionid", fields[1]);
+                    result += AddField("sessionid", fields[0]);
                     result += AddField("move", fields[1]);
+                }
+                else if (option == 9) {
+                    result += AddField("username", fields[0]);
                 }
                 else throw new ArgumentException("Invalid option!");
             }
@@ -67,11 +70,21 @@ namespace Client
                 this.sessionID = sessionID;
             }
         }
-        public static LoginCommandResponse LoginCommand(ref ServerConnection conn, string username, string password) {
+
+
+
+        public static LoginCommandResponse LoginCommand(ref ServerConnection connection, string username, string password) {
             string command = CreateClientMessage(5, username, password);
-            conn.SendMessage(command);
-            string[,] argArray = GetArgArrayFromResponse(conn.ReadMessage());
+            connection.SendMessage(command);
+            string[,] argArray = GetArgArrayFromResponse(connection.ReadMessage());
             return new LoginCommandResponse(Int32.Parse(argArray[0, 1]), argArray[1, 1]);
+        }
+
+        public static int CheckUsernameExistCommand(ref ServerConnection connection, string username) {
+            string command = CreateClientMessage(9, username);
+            connection.SendMessage(command);
+            string[,] argArray = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(argArray[0, 1]);
         }
     }
 }

@@ -10,16 +10,16 @@ namespace Client.ViewModels
     {
         public BaseViewModel CurrentViewModel {
             get {
-                return Navigator.CurrentViewModel;
+                return navigator.CurrentViewModel;
             }
             set {
-                Navigator.CurrentViewModel = value;
+                navigator.CurrentViewModel = value;
             }
         }
 
-        public MainViewModel(Navigator navigator) : base(navigator) {
+        public MainViewModel(ServerConnection connection, Navigator navigator) : base(connection, navigator) {
             
-            this.CurrentViewModel = new LoginViewModel(navigator);
+            this.CurrentViewModel = new LoginViewModel(this.connection, this.navigator);
         }
 
         public void OnViewChanged(object source, EventArgs args) {
