@@ -21,7 +21,7 @@ namespace ServerLibrary
             // We got it! Prepare answer from given data
             if (errorCode == 0)
             {
-                AddField("Error", ErrorCodes.NO_ERROR.ToString(), ref result);
+                AddField("Error", ((int)ErrorCodes.NO_ERROR).ToString(), ref result);
                 try
                 {
                     // Options can by only in range of <0,7>
@@ -59,7 +59,7 @@ namespace ServerLibrary
             //Tell client what went wrong
             else
             {
-                AddField("Error", errorCode.ToString(), ref result);
+                AddField("Error", ((int)errorCode).ToString(), ref result);
             }
             return result;
 

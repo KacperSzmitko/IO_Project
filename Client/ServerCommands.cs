@@ -81,6 +81,13 @@ namespace Client
             return new LoginCommandResponse(Int32.Parse(argArray[0, 1]), argArray[1, 1], argArray[1, 2]);
         }
 
+        public static int RegisterUser(ref ServerConnection connection, string username, string password) {
+            string command = CreateClientMessage(6, username, password);
+            connection.SendMessage(command);
+            string[,] argArray = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(argArray[0, 1]);
+        }
+
         public static int CheckUsernameExistCommand(ref ServerConnection connection, string username) {
             string command = CreateClientMessage(9, username);
             connection.SendMessage(command);

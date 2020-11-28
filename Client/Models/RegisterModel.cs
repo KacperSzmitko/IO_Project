@@ -13,8 +13,8 @@ namespace Client.Models
         }
 
         public bool CheckUsernameExist(string username) {
-            int result = ServerCommands.CheckUsernameExistCommand(ref connection, username);
-            if (result == 0) return false;
+            int error = ServerCommands.CheckUsernameExistCommand(ref connection, username);
+            if (error == 0) return false;
             else return true;
         }
 
@@ -25,6 +25,12 @@ namespace Client.Models
 
         public bool CheckPasswordsAreEqual(string pass1, string pass2) {
             if (pass1 == pass2) return true;
+            else return false;
+        }
+
+        public bool RegisterUser(string username, string pass) {
+            int error = ServerCommands.RegisterUser(ref connection, username, pass);
+            if (error == 0) return true;
             else return false;
         }
 

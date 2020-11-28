@@ -1,8 +1,10 @@
-﻿using Client.Models;
+﻿using Client.Commands;
+using Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Client.ViewModels
 {
@@ -13,6 +15,8 @@ namespace Client.ViewModels
         private string username;
         private string pass1;
         private string pass2;
+
+        private RelayCommand login;
 
         public bool GoodUsername { get; set; }
         public bool UsernameAvailable { get; set; }
@@ -26,9 +30,7 @@ namespace Client.ViewModels
                     username = value;
                     if (model.CheckUsernameText(username)) GoodUsername = true;
                     else GoodUsername = false;
-                    OnPropertyChanged(nameof(Username));
-                    OnPropertyChanged(nameof(UsernameBoxColor));
-                    OnPropertyChanged(nameof(UsernameInfoVisibility));
+                    UpdateUsernameBox();
                     if (GoodUsername) _ = UpdateIfUsernameExistAsync();
                 }
             }
@@ -41,8 +43,7 @@ namespace Client.ViewModels
                     pass1 = value;
                     if (model.CheckPasswordText(pass1)) GoodPass1 = true;
                     else GoodPass1 = false;
-                    OnPropertyChanged(nameof(Pass1BoxColor));
-                    OnPropertyChanged(nameof(Pass1InfoVisibility));
+                    UpdatePass1Box();
                 }
             }
         }
@@ -54,8 +55,7 @@ namespace Client.ViewModels
                     pass2 = value;
                     if (model.CheckPasswordText(pass2) && model.CheckPasswordsAreEqual(Pass1, pass2)) GoodPass2 = true;
                     else GoodPass2 = false;
-                    OnPropertyChanged(nameof(Pass2BoxColor));
-                    OnPropertyChanged(nameof(Pass2InfoVisibility));
+                    UpdatePass2Box();
                 }
             }
         }
@@ -111,24 +111,51 @@ namespace Client.ViewModels
                 else return "Collapsed";
             }
         }
-
+        
+        public ICommand LoginCommand {
+            get {
+                if (login == null) {
+                    login = new RelayCommand(_ => {
+                        if (model.RegisterUser(Username, Pass2)) navigator.CurrentViewModel = new LoginViewModel(connection, navigator);
+                    }, _ => {
+                        if (GoodUsername && UsernameAvailable && GoodPass1 && GoodPass2) return true;
+                        else return false;
+                    });
+                }
+                return login;
+            }
+        }
+        
         public RegisterViewModel(ServerConnection connection, Navigator navigator) : base(connection, navigator) {
             model = new RegisterModel(this.connection);
             this.GoodUsername = false;
-            this.UsernameAvailable = false;
+            this.UsernameAvailable = true;
             this.GoodPass1 = false;
             this.GoodPass2 = false;
         }
 
+        private void UpdateUsernameBox() {
+            OnPropertyChanged(nameof(Username));
+            OnPropertyChanged(nameof(UsernameBoxColor));
+            OnPropertyChanged(nameof(UsernameInfoVisibility));
+            OnPropertyChanged(nameof(UsernameInfoAvailabilityVisibility));
+        }
+
+        private void UpdatePass1Box() {
+            OnPropertyChanged(nameof(Pass1BoxColor));
+            OnPropertyChanged(nameof(Pass1InfoVisibility));
+        }
+
+        private void UpdatePass2Box() {
+            OnPropertyChanged(nameof(Pass2BoxColor));
+            OnPropertyChanged(nameof(Pass2InfoVisibility));
+        }
+
         private async Task UpdateIfUsernameExistAsync() {
             bool exists = await Task.Run(() => model.CheckUsernameExist(Username));
-            if (exists) {
-                UsernameAvailable = false;
-                GoodUsername = false;
-                OnPropertyChanged(nameof(UsernameBoxColor));
-                OnPropertyChanged(nameof(UsernameInfoVisibility));
-            }
+            if (exists) UsernameAvailable = false;
             else UsernameAvailable = true;
+            UpdateUsernameBox();
         }
 
 
