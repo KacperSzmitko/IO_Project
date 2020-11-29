@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbLibrary;
+using System;
 using System.Collections.Generic;
 using System.Net;
 
@@ -8,7 +9,6 @@ namespace ServerLibrary
     {
         static void Main(string[] args)
         {
-            string g = TransmisionProtocol.CreateServerMessage(1, 1, "Elo");
             //ServerConnection server = new ServerConnection();
             //server.RunServer();
         }
