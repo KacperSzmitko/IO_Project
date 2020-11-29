@@ -18,7 +18,6 @@ namespace Client.ViewModels
         }
 
         public MainViewModel(ServerConnection connection, Navigator navigator) : base(connection, navigator) {
-            
             this.CurrentViewModel = new LoginViewModel(this.connection, this.navigator);
         }
 

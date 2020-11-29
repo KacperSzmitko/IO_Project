@@ -1,5 +1,4 @@
-﻿using Client.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -12,16 +11,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Client.Views 
+namespace Client.Views
 {
-    public partial class LoginView : UserControl 
+    public partial class HomeView : UserControl
     {
-        public LoginView() {
+        public HomeView() {
             InitializeComponent();
-        }
-
-        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e) {
-            if (this.DataContext != null) { ((LoginViewModel)this.DataContext).Pass = ((PasswordBox)sender).Password; }
         }
     }
 }

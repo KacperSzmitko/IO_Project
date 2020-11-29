@@ -7,17 +7,17 @@ namespace Client
     public class User 
     {
         private readonly string sessionID;
-        private readonly string userID;
-        private readonly string userName;
+        private readonly string username;
+        private int elo;
 
         public string SessionID { get { return sessionID; } }
-        public string UserID { get { return userID; } }
-        public string UserName { get { return userName; } }
+        public string Username { get { return username; } }
+        public int Elo { get { return elo; } set { elo = value; } }
 
-        public User(string sessionID, string userID, string userName) {
+        public User(string sessionID, string username, int elo) {
             this.sessionID = sessionID;
-            this.userID = userID;
-            this.userName = userName;
+            this.username = username;
+            this.elo = elo;
         }
 
     }

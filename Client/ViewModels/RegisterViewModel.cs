@@ -12,26 +12,26 @@ namespace Client.ViewModels
     {
         private RegisterModel model;
 
+        private RelayCommand registerCommand;
+
         private string username;
         private string pass1;
         private string pass2;
 
-        private RelayCommand login;
-
-        public bool GoodUsername { get; set; }
-        public bool UsernameAvailable { get; set; }
-        public bool GoodPass1 { get; set; }
-        public bool GoodPass2 { get; set; }
+        private bool goodUsername;
+        private bool usernameAvailable;
+        private bool goodPass1;
+        private bool goodPass2;
 
         public string Username {
             get { return username; }
             set {
                 if (value != username) {
                     username = value;
-                    if (model.CheckUsernameText(username)) GoodUsername = true;
-                    else GoodUsername = false;
+                    if (model.CheckUsernameText(username)) goodUsername = true;
+                    else goodUsername = false;
                     UpdateUsernameBox();
-                    if (GoodUsername) _ = UpdateIfUsernameExistAsync();
+                    if (goodUsername) _ = UpdateIfUsernameExistAsync();
                 }
             }
         }
@@ -41,8 +41,8 @@ namespace Client.ViewModels
             set {
                 if (value != pass1) {
                     pass1 = value;
-                    if (model.CheckPasswordText(pass1)) GoodPass1 = true;
-                    else GoodPass1 = false;
+                    if (model.CheckPasswordText(pass1)) goodPass1 = true;
+                    else goodPass1 = false;
                     UpdatePass1Box();
                 }
             }
@@ -53,8 +53,8 @@ namespace Client.ViewModels
             set {
                 if (value != pass2) {
                     pass2 = value;
-                    if (model.CheckPasswordText(pass2) && model.CheckPasswordsAreEqual(Pass1, pass2)) GoodPass2 = true;
-                    else GoodPass2 = false;
+                    if (model.CheckPasswordText(pass2) && model.CheckPasswordsAreEqual(Pass1, pass2)) goodPass2 = true;
+                    else goodPass2 = false;
                     UpdatePass2Box();
                 }
             }
@@ -63,7 +63,7 @@ namespace Client.ViewModels
         public string UsernameBoxColor {
             get {
                 if (String.IsNullOrEmpty(Username)) return "White";
-                else if (!GoodUsername || !UsernameAvailable) return "Salmon";
+                else if (!goodUsername || !usernameAvailable) return "Salmon";
                 else return "LightGreen";
             }
         }
@@ -71,7 +71,7 @@ namespace Client.ViewModels
         public string Pass1BoxColor {
             get {
                 if (String.IsNullOrEmpty(Pass1)) return "White";
-                else if (!GoodPass1) return "Salmon";
+                else if (!goodPass1) return "Salmon";
                 else return "LightGreen";
             }
         }
@@ -79,59 +79,59 @@ namespace Client.ViewModels
         public string Pass2BoxColor {
             get {
                 if (String.IsNullOrEmpty(Pass2)) return "White";
-                else if (!GoodPass2) return "Salmon";
+                else if (!goodPass2) return "Salmon";
                 else return "LightGreen";
             }
         }
 
         public string UsernameInfoVisibility {
             get {
-                if (!String.IsNullOrEmpty(Username) && !GoodUsername) return "Visible";
+                if (!String.IsNullOrEmpty(Username) && !goodUsername) return "Visible";
                 else return "Collapsed";
             }
         }
 
         public string UsernameInfoAvailabilityVisibility {
             get {
-                if (!String.IsNullOrEmpty(Username) && GoodUsername && !UsernameAvailable) return "Visible";
+                if (!String.IsNullOrEmpty(Username) && goodUsername && !usernameAvailable) return "Visible";
                 else return "Collapsed";
             }
         }
 
         public string Pass1InfoVisibility {
             get {
-                if (!String.IsNullOrEmpty(Pass1) && !GoodPass1) return "Visible";
+                if (!String.IsNullOrEmpty(Pass1) && !goodPass1) return "Visible";
                 else return "Collapsed";
             }
         }
 
         public string Pass2InfoVisibility {
             get {
-                if (!String.IsNullOrEmpty(Pass2) && !GoodPass2) return "Visible";
+                if (!String.IsNullOrEmpty(Pass2) && !goodPass2) return "Visible";
                 else return "Collapsed";
             }
         }
         
-        public ICommand LoginCommand {
+        public ICommand RegisterCommand {
             get {
-                if (login == null) {
-                    login = new RelayCommand(_ => {
-                        if (model.RegisterUser(Username, Pass2)) navigator.CurrentViewModel = new LoginViewModel(connection, navigator);
+                if (registerCommand == null) {
+                    registerCommand = new RelayCommand(_ => {
+                        if (model.RegisterUser(Username, Pass2)) navigator.CurrentViewModel = new LoginViewModel(connection, navigator, true);
                     }, _ => {
-                        if (GoodUsername && UsernameAvailable && GoodPass1 && GoodPass2) return true;
+                        if (goodUsername && usernameAvailable && goodPass1 && goodPass2) return true;
                         else return false;
                     });
                 }
-                return login;
+                return registerCommand;
             }
         }
         
         public RegisterViewModel(ServerConnection connection, Navigator navigator) : base(connection, navigator) {
             model = new RegisterModel(this.connection);
-            this.GoodUsername = false;
-            this.UsernameAvailable = true;
-            this.GoodPass1 = false;
-            this.GoodPass2 = false;
+            this.goodUsername = false;
+            this.usernameAvailable = true;
+            this.goodPass1 = false;
+            this.goodPass2 = false;
         }
 
         private void UpdateUsernameBox() {
@@ -153,8 +153,8 @@ namespace Client.ViewModels
 
         private async Task UpdateIfUsernameExistAsync() {
             bool exists = await Task.Run(() => model.CheckUsernameExist(Username));
-            if (exists) UsernameAvailable = false;
-            else UsernameAvailable = true;
+            if (exists) usernameAvailable = false;
+            else usernameAvailable = true;
             UpdateUsernameBox();
         }
 

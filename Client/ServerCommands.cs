@@ -1,18 +1,18 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Client
 {
-    class ServerCommands
+    public static class ServerCommands
     {
-
-        public class LoginCommandResponse
+        public struct LoginCommandResponse
         {
             public readonly int error;
             public readonly string sessionID;
-            public readonly string elo;
-            public LoginCommandResponse(int error, string sessionID, string elo) {
+            public readonly int elo;
+            public LoginCommandResponse(int error, string sessionID, int elo) {
                 this.error = error;
                 this.sessionID = sessionID;
                 this.elo = elo;
@@ -59,7 +59,21 @@ namespace Client
             return result;
         }
 
-        private static string[,] GetArgArrayFromResponse(string response) {
+        private static string[] GetArgArrayFromResponse(string response) {
+            string[] args = response.Split("$$", StringSplitOptions.RemoveEmptyEntries);
+            int numOfArgs = args.Length;
+
+            string[] argArray = new string[numOfArgs];
+
+            for (int i = 0; i < numOfArgs; i++) {
+                string[] arg = args[i].Split(":", StringSplitOptions.RemoveEmptyEntries);
+                argArray[i] = arg[1];
+            }
+
+            return argArray;
+        }
+
+        private static string[,] Get2DArgArrayFromResponse(string response) {
             string[] args = response.Split("$$", StringSplitOptions.RemoveEmptyEntries);
             int numOfArgs = args.Length;
 
@@ -75,24 +89,32 @@ namespace Client
         }
 
         public static LoginCommandResponse LoginCommand(ref ServerConnection connection, string username, string password) {
-            string command = CreateClientMessage(5, username, password);
+            string command = CreateClientMessage((int)Options.LOGIN, username, password);
             connection.SendMessage(command);
-            string[,] argArray = GetArgArrayFromResponse(connection.ReadMessage());
-            return new LoginCommandResponse(Int32.Parse(argArray[0, 1]), argArray[1, 1], argArray[1, 2]);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            if (Int32.Parse(args[0]) == (int)ErrorCodes.NO_ERROR) return new LoginCommandResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]));
+            return new LoginCommandResponse(Int32.Parse(args[0]), "", 0);
         }
 
         public static int RegisterUser(ref ServerConnection connection, string username, string password) {
-            string command = CreateClientMessage(6, username, password);
+            string command = CreateClientMessage((int)Options.CREATE_USER, username, password);
             connection.SendMessage(command);
-            string[,] argArray = GetArgArrayFromResponse(connection.ReadMessage());
-            return Int32.Parse(argArray[0, 1]);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(args[0]);
         }
 
         public static int CheckUsernameExistCommand(ref ServerConnection connection, string username) {
-            string command = CreateClientMessage(9, username);
+            string command = CreateClientMessage((int)Options.CHECK_USER_NAME, username);
             connection.SendMessage(command);
-            string[,] argArray = GetArgArrayFromResponse(connection.ReadMessage());
-            return Int32.Parse(argArray[0, 1]);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(args[0]);
+        }
+
+        public static int LogoutCommand(ref ServerConnection connection, string sessionID) {
+            string command = CreateClientMessage((int)Options.LOGOUT, sessionID);
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(args[0]);
         }
     }
 }

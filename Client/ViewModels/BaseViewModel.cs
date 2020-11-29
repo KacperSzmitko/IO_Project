@@ -7,7 +7,7 @@ using Client.Commands;
 
 namespace Client.ViewModels
 {
-    public class BaseViewModel : INotifyPropertyChanged
+    public abstract class BaseViewModel : INotifyPropertyChanged
     {
         protected ServerConnection connection;
         protected Navigator navigator;
