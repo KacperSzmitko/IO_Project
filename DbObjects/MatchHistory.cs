@@ -13,5 +13,12 @@ namespace DbLibrary
         public string winner { get; set; }
         public string end_time { get; set; }
 
+        public string player1_elo { get; set; }
+        public string player2_elo { get; set; }
+        public string player1_elo_loss { get; set; }
+        public string player2_elo_loss { get; set; }
+        public string player1_points { get; set; }
+        public string player2_points { get; set; }
+
     }
 }
