@@ -14,7 +14,8 @@ namespace Client.ViewModels
     {
         private RankingModel model;
         private RelayCommand goHomeCommand;
-        private DataView rankingDataView;
+        private DataTable rankingDataTable;
+        private int userRankingPlace;
 
         public string Username {
             get { return model.User.Username; }
@@ -24,8 +25,12 @@ namespace Client.ViewModels
             get { return model.User.Elo; }
         }
 
-        public DataView RankingDataView {
-            get { return rankingDataView; }
+        public DataView RankingDataTableView {
+            get { return rankingDataTable.DefaultView; }
+        }
+
+        public string UserRankingPlaceText {
+            get { return "Twoja pozycja: " + userRankingPlace.ToString(); }
         }
 
         public ICommand GoHomeCommand {
@@ -39,25 +44,27 @@ namespace Client.ViewModels
             }
         }
 
-
-
-
-
         public RankingViewModel(ServerConnection connection, Navigator navigator, User user) : base(connection, navigator) {
             this.model = new RankingModel(this.connection, user);
-            this.rankingDataView = GetRankingDataView();
+            this.rankingDataTable = GetRankingDataTable();
+            this.userRankingPlace = GetUserRankingPlace();
 
         }
 
-        private DataView GetRankingDataView() {
+        private DataTable GetRankingDataTable() {
             DataSet ds = new DataSet();
             ds.ReadXml(new StringReader(model.RankingXML));
             DataTable dt = ds.Tables[0].Clone();
             dt.Columns[1].DataType = typeof(Int32);
             dt.Columns[2].DataType = typeof(Int32);
             foreach (DataRow row in ds.Tables[0].Rows) dt.ImportRow(row);
-            DataView dv = dt.DefaultView;
-            return dv;
+            return dt;
+        }
+
+        private int GetUserRankingPlace() {
+            string query = "Player = '" + model.User.Username + "'";
+            DataRow[] rows = rankingDataTable.Select(query);
+            return rows[0].Field<int>(2);
         }
 
 

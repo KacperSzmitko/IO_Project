@@ -7,8 +7,7 @@ namespace Client.Models
 {
     public class RankingModel : LoggedModel
     {
-
-        private string rankingXML;
+        private readonly string rankingXML;
 
         public string RankingXML {
             get { return rankingXML; }

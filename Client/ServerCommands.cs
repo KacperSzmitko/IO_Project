@@ -32,6 +32,16 @@ namespace Client
             }
         }
 
+        public struct GetMatchHistoryCommandResponse
+        {
+            public readonly int error;
+            public readonly string matchHistoryXML;
+            public GetMatchHistoryCommandResponse(int error, string matchHistoryXML) {
+                this.error = error;
+                this.matchHistoryXML = matchHistoryXML;
+            }
+        }
+
         //******************** TOOLS FOR CREATING COMMANDS ********************
 
         /// <summary>
@@ -140,6 +150,14 @@ namespace Client
             string[] args = GetArgArrayFromResponse(connection.ReadMessage());
             if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetRankingCommandResponse(Int32.Parse(args[0]), "");
             return new GetRankingCommandResponse(Int32.Parse(args[0]), args[1]);
+        }
+
+        public static GetMatchHistoryCommandResponse GetMatchHistoryCommand(ref ServerConnection connection, string sessionID) {
+            string command = CreateClientMessage((int)Options.MATCH_HISTORY, sessionID);
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetMatchHistoryCommandResponse(Int32.Parse(args[0]), "");
+            return new GetMatchHistoryCommandResponse(Int32.Parse(args[0]), args[1]);
         }
     }
 }

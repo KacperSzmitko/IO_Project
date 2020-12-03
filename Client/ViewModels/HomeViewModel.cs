@@ -12,6 +12,7 @@ namespace Client.ViewModels
         private HomeModel model;
         private RelayCommand logoutCommand;
         private RelayCommand goRankingCommand;
+        private RelayCommand goMatchHistoryCommand;
 
         public string Username {
             get { return model.User.Username; }
@@ -40,6 +41,17 @@ namespace Client.ViewModels
                     }, _ => true);
                 }
                 return goRankingCommand;
+            }
+        }
+
+        public ICommand GoMatchHistoryCommand {
+            get {
+                if (goMatchHistoryCommand == null) {
+                    goMatchHistoryCommand = new RelayCommand(_ => {
+                        navigator.CurrentViewModel = new MatchHistoryViewModel(connection, navigator, model.User);
+                    }, _ => true);
+                }
+                return goMatchHistoryCommand;
             }
         }
 
