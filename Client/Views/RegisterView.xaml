@@ -39,7 +39,7 @@
                 
             </Grid>
             <Button Margin="45 10 45 0" Padding="3" FontWeight="Bold" FontSize="18" Content="Zarejestruj się" Command="{Binding RegisterCommand}"/>
-            <Button Margin="65 10 65 0" Padding="2" FontWeight="Bold" FontSize="16" Content="Powrót do logowania" Command="{Binding UpdateViewCommand}" CommandParameter="Login"/>
+            <Button Margin="65 10 65 0" Padding="2" FontWeight="Bold" FontSize="16" Content="Powrót do logowania" Command="{Binding GoLoginCommand}"/>
 
 
         </StackPanel>

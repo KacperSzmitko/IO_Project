@@ -13,6 +13,7 @@ namespace Client.ViewModels
         private LoginModel model;
 
         private RelayCommand loginCommand;
+        private RelayCommand goRegistratonCommand;
 
         private string username;
         private string pass;
@@ -81,7 +82,16 @@ namespace Client.ViewModels
             }
         }
 
-
+        public ICommand GoRegistratonCommand {
+            get {
+                if (goRegistratonCommand == null) {
+                    goRegistratonCommand = new RelayCommand(_ => {
+                        navigator.CurrentViewModel = new RegisterViewModel(connection, navigator);
+                    }, _ => true);
+                }
+                return goRegistratonCommand;
+            }
+        }
 
         public LoginViewModel(ServerConnection connection, Navigator navigator, bool successRegistration = false) : base(connection, navigator) {
             model = new LoginModel(connection);

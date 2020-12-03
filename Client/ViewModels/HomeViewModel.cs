@@ -11,6 +11,7 @@ namespace Client.ViewModels
     {
         private HomeModel model;
         private RelayCommand logoutCommand;
+        private RelayCommand goRankingCommand;
 
         public string Username {
             get { return model.User.Username; }
@@ -28,6 +29,17 @@ namespace Client.ViewModels
                     }, _ => true);
                 }
                 return logoutCommand;
+            }
+        }
+
+        public ICommand GoRankingCommand {
+            get {
+                if (goRankingCommand == null) {
+                    goRankingCommand = new RelayCommand(_ => {
+                        navigator.CurrentViewModel = new RankingViewModel(connection, navigator, model.User);
+                    }, _ => true);
+                }
+                return goRankingCommand;
             }
         }
 

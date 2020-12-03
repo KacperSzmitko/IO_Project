@@ -7,6 +7,9 @@ namespace Client
 {
     public static class ServerCommands
     {
+
+        //******************** COMMANDS RESPONSES (MULTIPLE FIELDS) ********************
+
         public struct LoginCommandResponse
         {
             public readonly int error;
@@ -19,9 +22,17 @@ namespace Client
             }
         }
 
-        private static string AddField(string fieldName, string value) {
-            return fieldName + ":" + value + "$$";
+        public struct GetRankingCommandResponse
+        {
+            public readonly int error;
+            public readonly string rankingXML;
+            public GetRankingCommandResponse(int error, string rankingXML) {
+                this.error = error;
+                this.rankingXML = rankingXML;
+            }
         }
+
+        //******************** TOOLS FOR CREATING COMMANDS ********************
 
         /// <summary>
         /// Function which formats client data by using our transmition protocol
@@ -59,6 +70,10 @@ namespace Client
             return result;
         }
 
+        private static string AddField(string fieldName, string value) {
+            return fieldName + ":" + value + "$$";
+        }
+
         private static string[] GetArgArrayFromResponse(string response) {
             string[] args = response.Split("$$", StringSplitOptions.RemoveEmptyEntries);
             int numOfArgs = args.Length;
@@ -88,12 +103,14 @@ namespace Client
             return argArray;
         }
 
+        //******************** COMMANDS ********************
+
         public static LoginCommandResponse LoginCommand(ref ServerConnection connection, string username, string password) {
             string command = CreateClientMessage((int)Options.LOGIN, username, password);
             connection.SendMessage(command);
             string[] args = GetArgArrayFromResponse(connection.ReadMessage());
-            if (Int32.Parse(args[0]) == (int)ErrorCodes.NO_ERROR) return new LoginCommandResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]));
-            return new LoginCommandResponse(Int32.Parse(args[0]), "", 0);
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new LoginCommandResponse(Int32.Parse(args[0]), "", 0);
+            return new LoginCommandResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]));
         }
 
         public static int RegisterUser(ref ServerConnection connection, string username, string password) {
@@ -115,6 +132,14 @@ namespace Client
             connection.SendMessage(command);
             string[] args = GetArgArrayFromResponse(connection.ReadMessage());
             return Int32.Parse(args[0]);
+        }
+
+        public static GetRankingCommandResponse GetRankingCommand(ref ServerConnection connection, string sessionID) {
+            string command = CreateClientMessage((int)Options.RANK, sessionID);
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetRankingCommandResponse(Int32.Parse(args[0]), "");
+            return new GetRankingCommandResponse(Int32.Parse(args[0]), args[1]);
         }
     }
 }
