@@ -7,14 +7,15 @@ namespace ServerLibrary
 {
     public class Gameplay
     {
+
         public Player p1{get; set;}
         public Player p2{get; set;}
         public int p1Points { get; set; }
         public int p2Points { get; set; }
         public int pointsToWin { get; set; }
 
-		public  List<int> p1Positions = new List<int>(); //{ get; set; }
-		public  List<int> p2Positions = new List<int>();//{ get; set; }
+		public List<int> p1Positions { get; set; }
+		public List<int> p2Positions { get; set; }
 
 		public Gameplay(Player p1,Player p2,int boardSize,int pointsToWin)
         {
@@ -24,21 +25,22 @@ namespace ServerLibrary
             this.pointsToWin = pointsToWin;
             p1Points = 0;
             p2Points = 0;
-        }
+
+			p1Positions = new List<int>();
+			p2Positions = new List<int>();
+
+		}
 		// zapisanie danego ruchu i sprawdzenie co sie po nim stalo odbywa sie w metodzie move 
 		public Boolean move(int pos, Player player)
 		{
-			string symbol = " ";
 			if (!p1Positions.Contains(pos) && !p2Positions.Contains(pos))
 			{
 				if (player.Equals(p1))
 				{
-					symbol = "X";
 					p1Positions.Add(pos);
 				}
 				else if (player.Equals(p2))
 				{
-					symbol = "0";
 					p2Positions.Add(pos);
 				}
 				if (p1Positions.Contains(1) && p1Positions.Contains(2) && p1Positions.Contains(3)) {
@@ -56,7 +58,7 @@ namespace ServerLibrary
 				if (p1Positions.Contains(7) && p1Positions.Contains(8) && p1Positions.Contains(9))
 				{
 					p1Points++;
-					p1Positions.Clear();
+					p1Positions.Clear();																																																																																																	
 					p2Positions.Clear();
 					return true;
 				}
@@ -155,24 +157,15 @@ namespace ServerLibrary
 					return true;
 				}
 
-
-
-				if (p2Positions.Count + p1Positions.Count == 9)
+				if (p2Positions.Count + p1Positions.Count == 9) 
 				{
 					p1Positions.Clear();
 					p2Positions.Clear();
 					return true;
 				}
 				else return true;
-				
-
-				
 			}
-			else return false; //pozycja zajeta ruch niedozwolony
-
-
-
-
+			else return false; //pozycja zajeta, ruch niedozwolony
 		}
 	}
 }

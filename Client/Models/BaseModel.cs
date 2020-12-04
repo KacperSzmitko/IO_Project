@@ -8,6 +8,7 @@ namespace Client.Models
     public abstract class BaseModel
     {
         protected ServerConnection connection;
+
         public BaseModel(ServerConnection connection) {
             this.connection = connection;
         }

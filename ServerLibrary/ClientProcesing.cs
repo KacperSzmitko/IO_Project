@@ -170,6 +170,7 @@ namespace ServerLibrary
                         players[clientID].GenerateSessionId();
                         players[clientID].elo = dbConnection.GetClientElo(username);
                         elo = players[clientID].elo.ToString();
+                        players[clientID].name = username;
                     }
                     else return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_LOGGED_IN, (int)Options.LOGIN));
                     sessionId = players[clientID].sessionId;

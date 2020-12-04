@@ -6,7 +6,7 @@ namespace Client
     public class ServerConnection 
     {
 
-        private const int bufferSize = 1024;
+        private const int bufferSize = 10000;
 
         private readonly TcpClient tcpClient;
         private readonly NetworkStream stream;
