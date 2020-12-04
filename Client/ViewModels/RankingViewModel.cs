@@ -14,8 +14,8 @@ namespace Client.ViewModels
     {
         private RankingModel model;
         private RelayCommand goHomeCommand;
-        private DataTable rankingDataTable;
-        private int userRankingPlace;
+        private readonly DataTable rankingDataTable;
+        private readonly int userRankingPlace;
 
         public string Username {
             get { return model.User.Username; }

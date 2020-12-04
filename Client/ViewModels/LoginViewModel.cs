@@ -40,7 +40,7 @@ namespace Client.ViewModels
                 if (value != pass) {
                     pass = value;
                     if (!String.IsNullOrEmpty(pass)) goodPass = true;
-                    else goodUsername = false;
+                    else goodPass = false;
                     OnPropertyChanged(nameof(Pass));
                 }
             }

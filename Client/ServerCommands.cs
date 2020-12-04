@@ -91,7 +91,7 @@ namespace Client
             string[] argArray = new string[numOfArgs];
 
             for (int i = 0; i < numOfArgs; i++) {
-                string[] arg = args[i].Split(":", StringSplitOptions.RemoveEmptyEntries);
+                string[] arg = args[i].Split(":", 2, StringSplitOptions.RemoveEmptyEntries);
                 argArray[i] = arg[1];
             }
 
@@ -105,7 +105,7 @@ namespace Client
             string[,] argArray = new string[numOfArgs, 2];
 
             for (int i = 0; i < numOfArgs; i++) {
-                string[] arg = args[i].Split(":", StringSplitOptions.RemoveEmptyEntries);
+                string[] arg = args[i].Split(":", 2, StringSplitOptions.RemoveEmptyEntries);
                 argArray[i, 0] = arg[0];
                 argArray[i, 1] = arg[1];
             }

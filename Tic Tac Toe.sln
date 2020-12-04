@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbLibrary", "DbObjects\DbLi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{85BE23C2-D48A-4EDE-AB69-8BB1CF8ECC31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer", "TestServer\TestServer.csproj", "{486A8525-6BDB-4424-8C8F-51D6ACB89340}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestServer", "TestServer\TestServer.csproj", "{486A8525-6BDB-4424-8C8F-51D6ACB89340}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\TestClient.csproj", "{004F93FF-47C5-4C74-95C5-8EBB1950D92E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{486A8525-6BDB-4424-8C8F-51D6ACB89340}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{486A8525-6BDB-4424-8C8F-51D6ACB89340}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{486A8525-6BDB-4424-8C8F-51D6ACB89340}.Release|Any CPU.Build.0 = Release|Any CPU
+		{004F93FF-47C5-4C74-95C5-8EBB1950D92E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{004F93FF-47C5-4C74-95C5-8EBB1950D92E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{004F93FF-47C5-4C74-95C5-8EBB1950D92E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{004F93FF-47C5-4C74-95C5-8EBB1950D92E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

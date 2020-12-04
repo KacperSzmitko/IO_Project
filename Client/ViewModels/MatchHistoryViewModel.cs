@@ -14,7 +14,8 @@ namespace Client.ViewModels
     {
         private MatchHistoryModel model;
         private RelayCommand goHomeCommand;
-        private DataTable matchHistoryDataTable;
+        private readonly DataTable matchHistoryDataTable;
+        private readonly int userWinRatio;
 
         public string Username {
             get { return model.User.Username; }
@@ -42,6 +43,10 @@ namespace Client.ViewModels
             }
         }
 
+        public string UserWinRatioText {
+            get { return "Stosunek zwycięstw: " + userWinRatio.ToString() + "%"; }
+        }
+
         public ICommand GoHomeCommand {
             get {
                 if (goHomeCommand == null) {
@@ -56,6 +61,7 @@ namespace Client.ViewModels
         public MatchHistoryViewModel(ServerConnection connection, Navigator navigator, User user) : base(connection, navigator) {
             this.model = new MatchHistoryModel(this.connection, user);
             this.matchHistoryDataTable = GetMatchHistoryDataTable();
+            this.userWinRatio = GetUserWinRatio();
 
         }
 
@@ -63,11 +69,42 @@ namespace Client.ViewModels
             DataSet ds = new DataSet();
             ds.ReadXml(new StringReader(model.MatchHistoryXML));
             if (ds.Tables.Count == 0) return null;
-            DataTable dt = ds.Tables[0].Clone();
-            //dt.Columns[1].DataType = typeof(Int32);
-            //dt.Columns[2].DataType = typeof(Int32);
-            //foreach (DataRow row in ds.Tables[0].Rows) dt.ImportRow(row);
+
+            DataTable dt = new DataTable("MatchHistory");
+            dt.Columns.Add("numer", typeof(int));
+            dt.Columns.Add("przeciwnik", typeof(string));
+            dt.Columns.Add("wynik", typeof(string));
+            dt.Columns.Add("rezultat", typeof(string));
+            dt.Columns.Add("elo", typeof(int));
+            dt.Columns.Add("zmiana_elo", typeof(int));
+
+            DataRow newRow = dt.NewRow();
+            int i = 1;
+            bool isP1User;
+            foreach (DataRow row in ds.Tables[0].Rows) {
+                if ((string)row["p1Name"] == model.User.Username) isP1User = true;
+                else isP1User = false;
+                newRow["numer"] = i;
+                if (isP1User) newRow["przeciwnik"] = row["p2Name"];
+                else newRow["przeciwnik"] = row["p1Name"];
+                if (isP1User) newRow["wynik"] = row["p1Points"] + ":" + row["p2Points"];
+                else newRow["wynik"] = row["p2Points"] + ":" + row["p1Points"];
+                if ((string)row["winnerName"] == model.User.Username) newRow["rezultat"] = "Zwycięstwo";
+                else newRow["rezultat"] = "Porażka";
+                if (isP1User) newRow["elo"] = row["p1Elo"];
+                else newRow["elo"] = row["p2Elo"];
+                if (isP1User) newRow["zmiana_elo"] = row["p1EloLoss"];
+                else newRow["zmiana_elo"] = row["p2EloLoss"];
+
+                dt.Rows.Add(newRow);
+            }
             return dt;
+        }
+
+        private int GetUserWinRatio() {
+            if (matchHistoryDataTable == null) return 0;
+            if (matchHistoryDataTable.Rows.Count == 0) return 0;
+            return (matchHistoryDataTable.Select("rezultat = 'Zwycięstwo'").Length / matchHistoryDataTable.Rows.Count) * 100;
         }
 
     }

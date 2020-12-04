@@ -7,7 +7,17 @@
              Height="600" Width="400"
              Background="White"
              >
-    
+
+    <UserControl.Resources>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+
     <Border Padding="5 5 5 5">
         <StackPanel Orientation="Vertical">
             <Grid>
@@ -26,7 +36,35 @@
                 <TextBlock Grid.Column="1" Grid.Row="1" TextAlignment="Right" FontSize="20" Text="{Binding Elo}" d:Text="1000"/>
             </Grid>
 
-            <TextBlock Margin="0 235 0 0" TextAlignment="Center" FontSize="20" Text="Nie rozegrałeś jeszcze żadnych meczów" Visibility="{Binding NoMatchHistoryInfoVisibility}" d:Visibility="Collapsed"/>
+            <TextBlock Margin="0 10 0 0" TextAlignment="Center" FontSize="20" Text="{Binding UserWinRatioText}" Visibility="{Binding MatchHistoryTableVisibility}" d:Text="Stosunek zwycięstw: 50%"/>
+
+            <Grid Margin="0 18 0 0" Visibility="{Binding MatchHistoryTableVisibility}">
+                <DataGrid IsReadOnly="True" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="True" CanUserResizeColumns="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="1 1 1 0" BorderBrush="Black" ColumnWidth="*" Width="360" MaxHeight="420" ItemsSource="{Binding}" DataContext="{Binding MatchHistoryTableView}" d:Height="420">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding rezultat}" Value="Zwycięstwo">
+                                    <Setter Property="Background" Value="LightGreen"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding rezultat}" Value="Porażka">
+                                    <Setter Property="Background" Value="Salmon"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="20" Header="#" Binding="{Binding numer}"/>
+                        <DataGridTextColumn Header="Przeciwnik" Binding="{Binding przeciwnik}"/>
+                        <DataGridTextColumn Width="48" Header="Wynik" Binding="{Binding wynik}"/>
+                        <DataGridTextColumn Width="80" Header="Rezultat" Binding="{Binding rezultat}"/>
+                        <DataGridTextColumn Width="45" Header="Elo" Binding="{Binding elo}"/>
+                        <DataGridTextColumn Width="45" Header="Z. Elo" Binding="{Binding zmiana_elo}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+                    <TextBlock Margin="0 235 0 0" TextAlignment="Center" FontSize="20" Text="Nie rozegrałeś jeszcze żadnych meczów" Visibility="{Binding NoMatchHistoryInfoVisibility}" d:Visibility="Collapsed"/>
             <Button  Margin="120 25 120 0" Padding="2 2 2 4" FontSize="16" FontWeight="Bold" Content="Powrót" Command="{Binding GoHomeCommand}"/>
         </StackPanel>
     </Border>
