@@ -72,7 +72,9 @@ namespace DbLibrary
         //Get player's match history as xml
         public string GetMatchHistoryData(string playerName)
         {
-            string query = "SELECT mh.id,u.login,u2.login,u3.login,mh.end_time FROM match_history mh " +
+            string query = "SELECT mh.id,u.login,u2.login,u3.login,mh.end_time,mh.player1_elo,"
+                + "mh.player2_elo,mh.player1_elo_loss,mh.player2_elo_loss,mh.player1_points,mh.player2_points " +
+                "FROM match_history mh " +
                 "INNER JOIN user u on u.id = mh.player1_id " +
                 "INNER JOIN user u2 on u2.id = mh.player2_id " +
                 "INNER JOIN user u3 on u3.id = mh.winner " +
@@ -98,6 +100,12 @@ namespace DbLibrary
                     mh.player2 = dataReader.GetString(2);
                     mh.winner = dataReader.GetString(3);
                     mh.end_time = dataReader.GetString(4);
+                    mh.player1_elo = dataReader.GetString(5);
+                    mh.player2_elo = dataReader.GetString(6);
+                    mh.player1_elo_loss = dataReader.GetString(7);
+                    mh.player2_elo_loss = dataReader.GetString(8);
+                    mh.player1_points = dataReader.GetString(9);
+                    mh.player2_points = dataReader.GetString(10);
                     list.Add(mh);
 
                 }
@@ -117,6 +125,13 @@ namespace DbLibrary
                     el.AppendChild(doc.CreateElement("p2Name")).InnerText = match.player2;
                     el.AppendChild(doc.CreateElement("winnerName")).InnerText = match.winner;
                     el.AppendChild(doc.CreateElement("endTime")).InnerText = match.end_time;
+                    el.AppendChild(doc.CreateElement("p1Elo")).InnerText = match.player1_elo;
+                    el.AppendChild(doc.CreateElement("p2Elo")).InnerText = match.player2_elo;
+                    el.AppendChild(doc.CreateElement("p1EloLoss")).InnerText = match.player1_elo_loss;
+                    el.AppendChild(doc.CreateElement("p2EloLoss")).InnerText = match.player2_elo_loss;
+                    el.AppendChild(doc.CreateElement("p1Points")).InnerText = match.player1_points;
+                    el.AppendChild(doc.CreateElement("p2Points")).InnerText = match.player2_points;
+                    
                 }
                 //return list to be displayed
                 return doc.OuterXml;

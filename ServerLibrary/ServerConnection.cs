@@ -51,7 +51,7 @@ namespace ServerLibrary
                     //Found game
                     if (menager.CheckMatchAcctualization(clientID))
                     {
-                        sendMessage = menager.ProccesClient("Option:8$$", clientID);
+                        sendMessage = menager.ProccesClient("Option:10$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);
                         stream.Write(message);
                     }
@@ -70,7 +70,7 @@ namespace ServerLibrary
                 //Disconnection
                 if (sendMessage == "")
                 {
-                    message = Encoding.ASCII.GetBytes("Response:True$$");
+                    message = Encoding.ASCII.GetBytes("Response:0$$");
                     stream.Write(message);
                     break;
                 }
@@ -109,7 +109,7 @@ namespace ServerLibrary
                     //Found game
                     if (menager.CheckMatchAcctualization(clientID))
                     {
-                        sendMessage = menager.ProccesClient("Option:8$$", clientID);
+                        sendMessage = menager.ProccesClient("Option:10$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);
                         stream.Write(message);
                     }

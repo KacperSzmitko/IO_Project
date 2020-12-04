@@ -1,11 +1,24 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Client
 {
-    class ServerCommands
+    public static class ServerCommands
     {
+        public struct LoginCommandResponse
+        {
+            public readonly int error;
+            public readonly string sessionID;
+            public readonly int elo;
+            public LoginCommandResponse(int error, string sessionID, int elo) {
+                this.error = error;
+                this.sessionID = sessionID;
+                this.elo = elo;
+            }
+        }
+
         private static string AddField(string fieldName, string value) {
             return fieldName + ":" + value + "$$";
         }
@@ -14,9 +27,9 @@ namespace Client
         /// Function which formats client data by using our transmition protocol
         /// </summary>
         /// <param name="result">Reference to string where u want your result to be stored</param>
-        /// <param name="option">*0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove</param>
-        /// <param name="fields">*0-4 : SessionID    5-6 : Username Password   7 : SessionID Move</param>
-        public static string CreateClientMessage(int option, params string[] fields) {
+        /// <param name="option">*0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove  8 - Disconnect  9 - CheckUserName </param>
+        /// <param name="fields">*0-4 : SessionID    5-6 : Username Password   7 : SessionID Move   9 : Username</param>
+        private static string CreateClientMessage(int option, params string[] fields) {
             string result = "";
             try {
                 result += AddField("option", option.ToString());
@@ -31,8 +44,11 @@ namespace Client
                 }
                 //SendMove
                 else if (option == 7) {
-                    result += AddField("sessionid", fields[1]);
+                    result += AddField("sessionid", fields[0]);
                     result += AddField("move", fields[1]);
+                }
+                else if (option == 9) {
+                    result += AddField("username", fields[0]);
                 }
                 else throw new ArgumentException("Invalid option!");
             }
@@ -43,14 +59,28 @@ namespace Client
             return result;
         }
 
-        private static string[,] GetArgArrayFromResponse(string response) {
-            string[] args = response.Split("&&");
+        private static string[] GetArgArrayFromResponse(string response) {
+            string[] args = response.Split("$$", StringSplitOptions.RemoveEmptyEntries);
+            int numOfArgs = args.Length;
+
+            string[] argArray = new string[numOfArgs];
+
+            for (int i = 0; i < numOfArgs; i++) {
+                string[] arg = args[i].Split(":", StringSplitOptions.RemoveEmptyEntries);
+                argArray[i] = arg[1];
+            }
+
+            return argArray;
+        }
+
+        private static string[,] Get2DArgArrayFromResponse(string response) {
+            string[] args = response.Split("$$", StringSplitOptions.RemoveEmptyEntries);
             int numOfArgs = args.Length;
 
             string[,] argArray = new string[numOfArgs, 2];
 
             for (int i = 0; i < numOfArgs; i++) {
-                string[] arg = args[i].Split(":");
+                string[] arg = args[i].Split(":", StringSplitOptions.RemoveEmptyEntries);
                 argArray[i, 0] = arg[0];
                 argArray[i, 1] = arg[1];
             }
@@ -58,20 +88,33 @@ namespace Client
             return argArray;
         }
 
-        public struct LoginCommandResponse 
-        {
-            public readonly string sessionID;
-            public readonly int result;
-            public LoginCommandResponse(int result, string sessionID) {
-                this.result = result;
-                this.sessionID = sessionID;
-            }
+        public static LoginCommandResponse LoginCommand(ref ServerConnection connection, string username, string password) {
+            string command = CreateClientMessage((int)Options.LOGIN, username, password);
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            if (Int32.Parse(args[0]) == (int)ErrorCodes.NO_ERROR) return new LoginCommandResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]));
+            return new LoginCommandResponse(Int32.Parse(args[0]), "", 0);
         }
-        public static LoginCommandResponse LoginCommand(ref ServerConnection conn, string username, string password) {
-            string command = CreateClientMessage(5, username, password);
-            conn.SendMessage(command);
-            string[,] argArray = GetArgArrayFromResponse(conn.ReadMessage());
-            return new LoginCommandResponse(Int32.Parse(argArray[0, 1]), argArray[1, 1]);
+
+        public static int RegisterUser(ref ServerConnection connection, string username, string password) {
+            string command = CreateClientMessage((int)Options.CREATE_USER, username, password);
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(args[0]);
+        }
+
+        public static int CheckUsernameExistCommand(ref ServerConnection connection, string username) {
+            string command = CreateClientMessage((int)Options.CHECK_USER_NAME, username);
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(args[0]);
+        }
+
+        public static int LogoutCommand(ref ServerConnection connection, string sessionID) {
+            string command = CreateClientMessage((int)Options.LOGOUT, sessionID);
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(args[0]);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Client.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,10 +20,11 @@ namespace Client
     {
         public MainWindow() {
             InitializeComponent();
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e) {
-            DataContext = new ViewModels.Login();
+            ServerConnection connection = new ServerConnection("localhost", 17777);
+            Navigator navigator = new Navigator();
+            MainViewModel viewModel = new MainViewModel(connection, navigator);
+            navigator.ViewChanged += viewModel.OnViewChanged;
+            DataContext = viewModel;
         }
     }
 }

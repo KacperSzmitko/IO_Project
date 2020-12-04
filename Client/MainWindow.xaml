@@ -3,20 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        xmlns:viewmodels="clr-namespace:Client.ViewModels"
-        xmlns:views="clr-namespace:Client.Views"
-        Title="Tic Tac Toe" Height="600" Width="400" 
+        Title="Tic Tac Toe" 
+        Height="600" Width="400"
         ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterScreen"
-        Loaded="Window_Loaded">
+        >
 
-    <Window.Resources>
-        <DataTemplate x:Name="LoginViewTemplate" DataType="{x:Type viewmodels:Login}">
-            <views:Login DataContext="{Binding}"/>
-        </DataTemplate>
-    </Window.Resources>
-
-    <ContentControl Content="{Binding}"/>
+    <ContentControl Content="{Binding CurrentViewModel}"/>
 </Window>

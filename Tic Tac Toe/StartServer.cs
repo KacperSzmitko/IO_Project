@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServerLibrary;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +9,8 @@ namespace Tic_Tac_Toe
     {
         public static void Main(string[] args)
         {
-
+            ServerConnection server = new ServerConnection();
+            server.RunServer();
         }
     }
 }
