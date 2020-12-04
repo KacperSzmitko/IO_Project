@@ -31,14 +31,14 @@ namespace Client.ViewModels
 
         public string MatchHistoryTableVisibility {
             get {
-                if (matchHistoryDataTable == null) return "Collapsed";
+                if (matchHistoryDataTable.Rows.Count == 0) return "Collapsed";
                 return "Visible";
             }
         }
 
         public string NoMatchHistoryInfoVisibility {
             get {
-                if (matchHistoryDataTable == null) return "Visible";
+                if (matchHistoryDataTable.Rows.Count == 0) return "Visible";
                 return "Collapsed";
             }
         }
@@ -68,7 +68,6 @@ namespace Client.ViewModels
         private DataTable GetMatchHistoryDataTable() {
             DataSet ds = new DataSet();
             ds.ReadXml(new StringReader(model.MatchHistoryXML));
-            if (ds.Tables.Count == 0) return null;
 
             DataTable dt = new DataTable("MatchHistory");
             dt.Columns.Add("numer", typeof(int));
@@ -77,6 +76,8 @@ namespace Client.ViewModels
             dt.Columns.Add("rezultat", typeof(string));
             dt.Columns.Add("elo", typeof(int));
             dt.Columns.Add("zmiana_elo", typeof(int));
+
+            if (ds.Tables.Count == 0) return dt;
 
             DataRow newRow = dt.NewRow();
             int i = 1;
@@ -102,7 +103,6 @@ namespace Client.ViewModels
         }
 
         private int GetUserWinRatio() {
-            if (matchHistoryDataTable == null) return 0;
             if (matchHistoryDataTable.Rows.Count == 0) return 0;
             return (matchHistoryDataTable.Select("rezultat = 'Zwycięstwo'").Length / matchHistoryDataTable.Rows.Count) * 100;
         }
