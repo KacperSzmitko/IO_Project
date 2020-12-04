@@ -11,14 +11,12 @@ namespace Client.ViewModels
     {
         protected ServerConnection connection;
         protected Navigator navigator;
-        public ICommand UpdateViewCommand { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public BaseViewModel(ServerConnection connection, Navigator navigator) {
             this.connection = connection;
             this.navigator = navigator;
-            this.UpdateViewCommand = new UpdateViewCommand(this.connection, this.navigator);
         }
 
         protected void OnPropertyChanged(string propertyName) {

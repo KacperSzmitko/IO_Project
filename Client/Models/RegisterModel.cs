@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Client.Models
@@ -9,7 +10,7 @@ namespace Client.Models
     public class RegisterModel : BaseModel
     {
         public bool CheckUsernameText(string username) {
-            if (username.Length >= 3) return true;
+            if (Regex.Match(username, @"^[\w]{3,}$").Success) return true;
             else return false;
         }
 
