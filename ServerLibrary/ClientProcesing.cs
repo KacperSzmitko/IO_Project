@@ -40,7 +40,7 @@ namespace ServerLibrary
 
         public DbMethods dbConnection { get; set; }
 
-        
+        private Security security;
 
         /// <summary>
         /// Function that takes message from client procces it and return server response
@@ -160,7 +160,7 @@ namespace ServerLibrary
             try { passwordHash = dbConnection.GetUserPassword(username); }
             catch(Exception e) { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.LOGIN); }
 
-            if (Security.VerifyPassword(passwordHash, password))
+            if (security.VerifyPassword(passwordHash, password))
             {
                 string elo;
                 lock (players)
@@ -189,7 +189,7 @@ namespace ServerLibrary
             if(dbConnection.CheckIfNameExist(username))
                 return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_EXISTS, (int)Options.CREATE_USER);
 
-            password = Security.HashPassword(password);
+            password = security.HashPassword(password);
             if (dbConnection.AddNewUser(username, password)) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.CREATE_USER);
             else return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.CREATE_USER);
         }
@@ -373,6 +373,7 @@ namespace ServerLibrary
             functions.Add(new Functions(CheckUserName));
             functions.Add(new Functions(SendMatch));
             matchMaking = new Thread(MatchMaking);
+            security = new pbkdf2();
             matchMaking.Start();
         }
     }

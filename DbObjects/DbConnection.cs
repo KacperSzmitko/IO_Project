@@ -2,7 +2,7 @@
 
 namespace DbLibrary
 {
-    public class DbConnection
+    public abstract class DbConnection
     {
         protected MySqlConnection connection;
         protected string server;

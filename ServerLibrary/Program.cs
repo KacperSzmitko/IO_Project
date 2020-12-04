@@ -9,6 +9,9 @@ namespace ServerLibrary
     {
         static void Main(string[] args)
         {
+            DbMethods m = new DbMethods();
+            Console.WriteLine(TransmisionProtocol.CreateServerMessage(0, 1, m.GetMatchHistoryData("test")));
+
             //ServerConnection server = new ServerConnection();
             //server.RunServer();
         }
