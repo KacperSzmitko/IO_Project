@@ -39,7 +39,35 @@
             <TextBlock Margin="0 10 0 0" TextAlignment="Center" FontSize="20" Text="{Binding UserWinRatioText}" Visibility="{Binding MatchHistoryTableVisibility}" d:Text="Stosunek zwycięstw: 50%"/>
 
             <Grid Margin="0 18 0 0" Visibility="{Binding MatchHistoryTableVisibility}">
-                <DataGrid IsReadOnly="True" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="True" CanUserResizeColumns="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="1 1 1 0" BorderBrush="Black" ColumnWidth="*" Width="360" MaxHeight="420" ItemsSource="{Binding}" DataContext="{Binding MatchHistoryTableView}" d:Height="420">
+                <DataGrid IsReadOnly="True" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserResizeColumns="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="1 1 1 0" BorderBrush="Black" ColumnWidth="*" Width="360" MaxHeight="420" ItemsSource="{Binding}" DataContext="{Binding MatchHistoryTableView}" d:Height="420">
+
+                    <DataGrid.Resources>
+                        <ResourceDictionary>
+                            <Style x:Key="{x:Type DataGridCell}" TargetType="{x:Type DataGridCell}">
+                                <Setter Property="Background" Value="{x:Null}" />
+                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{x:Null}" />
+                                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                            <Style TargetType="{x:Type DataGridRow}">
+                                <Setter Property="Background" Value="{x:Null}" />
+                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{x:Null}" />
+                                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ResourceDictionary>
+                    </DataGrid.Resources>
+
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
                             <Style.Triggers>
