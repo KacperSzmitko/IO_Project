@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace ServerLibrary
 {
     //Class which provides static security methods
-    class pbkdf2 : Security
+    public class pbkdf2 : Security
     {
         public string HashPassword(string passwd)
         {
