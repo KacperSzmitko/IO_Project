@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="Client.ServerConnection">
+    <Position X="2.25" Y="10" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAACAAABBAIAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>ServerConnection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.ServerCommands">
+    <Position X="0.5" Y="0.5" Width="7.25" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Struct Name="Client.ServerCommands.LoginCommandResponse">
+        <TypeIdentifier>
+          <NewMemberFileName>ServerCommands.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Struct Name="Client.ServerCommands.GetRankingCommandResponse">
+        <TypeIdentifier>
+          <NewMemberFileName>ServerCommands.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Struct Name="Client.ServerCommands.GetMatchHistoryCommandResponse">
+        <TypeIdentifier>
+          <NewMemberFileName>ServerCommands.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>EAAAAAAEACAAAAAAAAAIAAEAAAAAABAAAAIAAASAAIA=</HashCode>
+      <FileName>ServerCommands.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Models.BaseModel">
+    <Position X="14.5" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>Models\BaseModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Models.LoggedModel">
+    <Position X="13.25" Y="3.25" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>Models\LoggedModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Models.HomeModel">
+    <Position X="10" Y="6.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Models\HomeModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Models.LoginModel">
+    <Position X="9.5" Y="3.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>Models\LoginModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Models.MatchHistoryModel">
+    <Position X="18.75" Y="6.5" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAggAAAAAAA=</HashCode>
+      <FileName>Models\MatchHistoryModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Models.RankingModel">
+    <Position X="14.25" Y="6.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Models\RankingModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Models.RegisterModel">
+    <Position X="17.25" Y="3.25" Width="4" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAgAAAAAAAAgCAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Models\RegisterModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.ViewModels.BaseViewModel">
+    <Position X="36.5" Y="0.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAAAAIAABAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\BaseViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.ViewModels.HomeViewModel">
+    <Position X="36.25" Y="4.25" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAACAEQAQAAAAAAAAAAAQAAAIAAAIAIA=</HashCode>
+      <FileName>ViewModels\HomeViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.ViewModels.LoginViewModel">
+    <Position X="24.5" Y="4.25" Width="5.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAwAAAAEIQAAAAEADAAAAABAAIAAAACJAAA=</HashCode>
+      <FileName>ViewModels\LoginViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.ViewModels.RegisterViewModel">
+    <Position X="30.5" Y="4.25" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>AIAAIASEAAAAggABARACAIEQAIAEAADAAAQAgJAIACA=</HashCode>
+      <FileName>ViewModels\RegisterViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.User">
+    <Position X="14.5" Y="11" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAQgAAAEIAAAAAAAAAAAIAAAACAA=</HashCode>
+      <FileName>User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.ViewModels.RankingViewModel">
+    <Position X="42" Y="4.25" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAgBAAAAAQAQAQACAAAAAAAAAAEYAAAIAAA=</HashCode>
+      <FileName>ViewModels\RankingViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.ViewModels.MatchHistoryViewModel">
+    <Position X="47.75" Y="4.25" Width="5.75" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAEAAAAAAQAQAAAAAARAAAQAAAAYQAQIAAA=</HashCode>
+      <FileName>ViewModels\MatchHistoryViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.ViewModels.MainViewModel">
+    <Position X="31" Y="1.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\MainViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Views.HomeView">
+    <Position X="65.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\HomeView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Views.LoginView">
+    <Position X="55.25" Y="5.25" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\LoginView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Views.MatchHistoryView">
+    <Position X="67.25" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\MatchHistoryView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Views.RankingView">
+    <Position X="69.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\RankingView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Views.RegisterView">
+    <Position X="60.25" Y="5.25" Width="5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>Views\RegisterView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Commands.RelayCommand">
+    <Position X="33.75" Y="13.25" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEACAAQAAECAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Commands\RelayCommand.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Converters.StringToIntConverter">
+    <Position X="41.25" Y="13.5" Width="5.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\StringToIntConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.App">
+    <Position X="56.5" Y="1.25" Width="6.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>App.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.MainWindow">
+    <Position X="64.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Navigator">
+    <Position X="27" Y="13" Width="3.25" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Delegate Name="Client.Navigator.ViewChangedEventHandler">
+        <TypeIdentifier>
+          <NewMemberFileName>Navigator.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAEAAAABAAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Navigator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
