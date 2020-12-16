@@ -3,7 +3,7 @@ using Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Input;
 
 namespace Client.ViewModels
@@ -11,6 +11,8 @@ namespace Client.ViewModels
     public class RegisterViewModel : BaseViewModel
     {
         private RegisterModel model;
+
+        private Thread updateIfUsernameExistThread;
 
         private RelayCommand registerCommand;
         private RelayCommand goLoginCommand;
@@ -32,7 +34,10 @@ namespace Client.ViewModels
                     if (model.CheckUsernameText(username)) goodUsername = true;
                     else goodUsername = false;
                     UpdateUsernameBox();
-                    if (goodUsername) _ = UpdateIfUsernameExistAsync();
+                    if (goodUsername) {
+                        updateIfUsernameExistThread = new Thread(UpdateIfUsernameExistAsync);
+                        updateIfUsernameExistThread.Start();
+                    }
                 }
             }
         }
@@ -117,7 +122,10 @@ namespace Client.ViewModels
             get {
                 if (registerCommand == null) {
                     registerCommand = new RelayCommand(_ => {
-                        if (model.RegisterUser(Username, Pass2)) navigator.CurrentViewModel = new LoginViewModel(connection, navigator, true);
+                        if (model.RegisterUser(Username, Pass2)) {
+                            updateIfUsernameExistThread.Join();
+                            navigator.CurrentViewModel = new LoginViewModel(connection, navigator, true);
+                        }
                     }, _ => {
                         if (goodUsername && usernameAvailable && goodPass1 && goodPass2) return true;
                         else return false;
@@ -131,6 +139,7 @@ namespace Client.ViewModels
             get {
                 if (goLoginCommand == null) {
                     goLoginCommand = new RelayCommand(_ => {
+                        updateIfUsernameExistThread.Join();
                         navigator.CurrentViewModel = new LoginViewModel(connection, navigator);
                     }, _ => true);
                 }
@@ -163,14 +172,11 @@ namespace Client.ViewModels
             OnPropertyChanged(nameof(Pass2InfoVisibility));
         }
 
-        private async Task UpdateIfUsernameExistAsync() {
-            bool exists = await Task.Run(() => model.CheckUsernameExist(Username));
+        private void UpdateIfUsernameExistAsync() {
+            bool exists = model.CheckUsernameExist(Username);
             if (exists) usernameAvailable = false;
             else usernameAvailable = true;
             UpdateUsernameBox();
         }
-
-
-
     }
 }

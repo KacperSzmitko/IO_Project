@@ -42,6 +42,18 @@ namespace Client
             }
         }
 
+        public struct GetFoundMatchResponse
+        {
+            public readonly int error;
+            public readonly string opponentName;
+            public int opponentRank;
+            public GetFoundMatchResponse(int error, string opponentName, int opponentRank) {
+                this.error = error;
+                this.opponentName = opponentName;
+                this.opponentRank = opponentRank;
+            }
+        }
+
         //******************** TOOLS FOR CREATING COMMANDS ********************
 
         /// <summary>
@@ -158,6 +170,19 @@ namespace Client
             string[] args = GetArgArrayFromResponse(connection.ReadMessage());
             if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetMatchHistoryCommandResponse(Int32.Parse(args[0]), "");
             return new GetMatchHistoryCommandResponse(Int32.Parse(args[0]), args[1]);
+        }
+
+        public static int SearchMatchCommand(ref ServerConnection connection, string sessionID) {
+            string command = CreateClientMessage((int)Options.SEARCH_GAME, sessionID);
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(args[0]);
+        }
+
+        public static GetFoundMatchResponse GetFoundMatchCommand_responseOnly(ref ServerConnection connection) {
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetFoundMatchResponse(Int32.Parse(args[0]), "", 0);
+            return new GetFoundMatchResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]));
         }
     }
 }

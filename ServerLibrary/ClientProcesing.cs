@@ -162,9 +162,15 @@ namespace ServerLibrary
 
             if (security.VerifyPassword(passwordHash, password))
             {
-                string elo;
+                string elo = "";
                 lock (players)
                 {
+                    foreach (Player p in players) {
+                        if (p.name == username && p.sessionId != null) {
+                            return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_LOGGED_IN, (int)Options.LOGIN);
+                        }
+                    } 
+
                     if (players[clientID].sessionId == null)
                     {
                         players[clientID].GenerateSessionId();
@@ -172,10 +178,9 @@ namespace ServerLibrary
                         elo = players[clientID].elo.ToString();
                         players[clientID].name = username;
                     }
-                    else return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_LOGGED_IN, (int)Options.LOGIN));
                     sessionId = players[clientID].sessionId;
                 }
-                return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGIN, sessionId,elo);
+                return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGIN, sessionId, elo);
             }
             else return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.INCORRECT_PASSWORD, (int)Options.LOGIN);
         }
@@ -325,9 +330,9 @@ namespace ServerLibrary
             {
                 if(p1.name == playerName)
                 {
-                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p2.name, p2.elo.ToString(), p1.elo.ToString()));
+                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p2.name, p2.elo.ToString()));
                 }
-                return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p1.name, p1.elo.ToString(), p2.elo.ToString()));
+                return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p1.name, p1.elo.ToString()));
             }
         }
 
