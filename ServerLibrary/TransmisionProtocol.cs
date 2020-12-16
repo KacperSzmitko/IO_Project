@@ -36,7 +36,6 @@ namespace ServerLibrary
                     {
                         AddField("OppName", fields[0], ref result);
                         AddField("OppRank", fields[1], ref result);
-                        AddField("Rank", fields[2], ref result);
                     }
                     //Login
                     else if (option == 5)
