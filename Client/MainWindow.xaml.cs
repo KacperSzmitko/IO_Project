@@ -24,7 +24,9 @@ namespace Client
             Navigator navigator = new Navigator();
             MainViewModel viewModel = new MainViewModel(connection, navigator);
             navigator.ViewChanged += viewModel.OnViewChanged;
+            Closing += viewModel.OnWindowClosing;
             DataContext = viewModel;
+            
         }
     }
 }

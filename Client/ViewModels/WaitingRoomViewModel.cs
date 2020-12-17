@@ -75,13 +75,11 @@ namespace Client.ViewModels
             if (successfulSearchStart) {
                 Opponent opponent = model.GetFoundMatch();
                 if (opponent == null) navigator.CurrentViewModel = new HomeViewModel(connection, navigator, model.User);
-                //TODO
+                navigator.CurrentViewModel = new MatchViewModel(connection, navigator, model.User, opponent);
             } 
             else {
                 navigator.CurrentViewModel = new HomeViewModel(connection, navigator, model.User);
             }
-        
         }
-
     }
 }

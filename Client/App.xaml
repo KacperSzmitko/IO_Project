@@ -33,6 +33,9 @@
         <DataTemplate DataType="{x:Type viewmodels:WaitingRoomViewModel}">
             <views:WaitingRoomView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:MatchViewModel}">
+            <views:MatchView/>
+        </DataTemplate>
 
 
 
