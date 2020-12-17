@@ -7,7 +7,6 @@ namespace ServerLibrary
 {
     public class Gameplay
     {
-
         public Player p1{get; set;}
         public Player p2{get; set;}
         public int p1Points { get; set; }

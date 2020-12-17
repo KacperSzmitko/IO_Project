@@ -79,15 +79,7 @@ namespace ServerLibrary
 
                     }
                 }
-                try
-                {
-                    players[clientID].sessionId = null;
-                }
-                catch(ArgumentOutOfRangeException err)
-                {
-                    
-                    return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGOUT, err.Message);
-                }
+                players[clientID].sessionId = null;
             }
             return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGOUT);
         }
@@ -135,7 +127,7 @@ namespace ServerLibrary
                 }
                 playersWaitingForGame.Add(clientID);
             }
-            lock (players) players[clientID].matchID = -1;
+            //lock (players) players[clientID].matchID = -1;
             return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME);
         }
 
@@ -148,8 +140,7 @@ namespace ServerLibrary
         // Try to login client
         //TODO Add username to user 
         public string Login(string msg, int clientID)
-        {
-            
+        {      
             string[] fields = msg.Split("$$", StringSplitOptions.RemoveEmptyEntries);
             string username = fields[0].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
             string password = fields[1].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
@@ -165,6 +156,7 @@ namespace ServerLibrary
                 string elo;
                 lock (players)
                 {
+
                     if (players[clientID].sessionId == null)
                     {
                         players[clientID].GenerateSessionId();
@@ -230,15 +222,12 @@ namespace ServerLibrary
         }
 
         public string Disconnect(string msg,int clientID)
-        {
-            
+        {      
             lock (players)
             {
-                if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.DISCONNECT, "Nie jestes zalogowany");
                 players.RemoveAt(clientID);
                 return "";
             }
-
         }
 
 

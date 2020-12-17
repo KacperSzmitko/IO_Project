@@ -30,8 +30,8 @@ namespace ServerLibrary
         {
             this.sessionId = null;
             this.name = null;
-            //-2 doesnt search game -1 searching game >=0 in match
-            this.matchID = -2;
+            //-1 not in match >=0 in match
+            this.matchID = -1;
             this.random = new Random();
             this.elo = 0;
             this.matchActualization = false;
