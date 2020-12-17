@@ -30,6 +30,12 @@
         <DataTemplate DataType="{x:Type viewmodels:MatchHistoryViewModel}">
             <views:MatchHistoryView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:WaitingRoomViewModel}">
+            <views:WaitingRoomView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:MatchViewModel}">
+            <views:MatchView/>
+        </DataTemplate>
 
 
 

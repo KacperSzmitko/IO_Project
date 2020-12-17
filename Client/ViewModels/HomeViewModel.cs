@@ -10,9 +10,10 @@ namespace Client.ViewModels
     public class HomeViewModel : BaseViewModel
     {
         private HomeModel model;
-        private RelayCommand logoutCommand;
+        private RelayCommand goWaitingRoomCommand;
         private RelayCommand goRankingCommand;
         private RelayCommand goMatchHistoryCommand;
+        private RelayCommand logoutCommand;
 
         public string Username {
             get { return model.User.Username; }
@@ -22,14 +23,14 @@ namespace Client.ViewModels
             get { return model.User.Elo; }
         }
 
-        public ICommand LogoutCommand {
+        public ICommand GoWaitingRoomCommand {
             get {
-                if (logoutCommand == null) {
-                    logoutCommand = new RelayCommand(_ => {
-                        if (model.LogoutUser()) navigator.CurrentViewModel = new LoginViewModel(connection, navigator);
+                if (goWaitingRoomCommand == null) {
+                    goWaitingRoomCommand = new RelayCommand(_ => {
+                        navigator.CurrentViewModel = new WaitingRoomViewModel(connection, navigator, model.User);
                     }, _ => true);
                 }
-                return logoutCommand;
+                return goWaitingRoomCommand;
             }
         }
 
@@ -52,6 +53,17 @@ namespace Client.ViewModels
                     }, _ => true);
                 }
                 return goMatchHistoryCommand;
+            }
+        }
+
+        public ICommand LogoutCommand {
+            get {
+                if (logoutCommand == null) {
+                    logoutCommand = new RelayCommand(_ => {
+                        if (model.LogoutUser()) navigator.CurrentViewModel = new LoginViewModel(connection, navigator);
+                    }, _ => true);
+                }
+                return logoutCommand;
             }
         }
 

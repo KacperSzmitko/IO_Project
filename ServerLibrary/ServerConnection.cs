@@ -31,20 +31,20 @@ namespace ServerLibrary
         {
             TcpClient client = obj as TcpClient;
             NetworkStream stream = client.GetStream();
-            stream.ReadTimeout = 5000;
             byte[] message;
 
             int clientID = menager.AddPlayer(new Player());
             while (true)
             {
                 //Read message
+                CancellationTokenSource cts = new CancellationTokenSource(5000);
                 string sendMessage = "";
                 byte[] buffer = new byte[2048];
                 StringBuilder messageData = new StringBuilder();
                 int bytes = -1;
                 try
                 {
-                    bytes = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    bytes = await stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
                 }
                 catch
                 {
