@@ -14,8 +14,8 @@ namespace Shared
         SEND_MOVE = 7, //           SessionID:<>$$Move:<>$$                       Error:<>$$Score:np.1-0$$ gdzie pierwsza jest klienta ktroy wyslal ruch
         DISCONNECT = 8, //Ready                                                   Error:<>$$
         CHECK_USER_NAME = 9, //     Username:<>$$                                 Error:<>$$
-        SEND_MATCH = 10 //                                                        Error:<>$$OppName:<>$$OppRank:<>$$IsCross:<>
-
+        SEND_MATCH = 10, //                                                       Error:<>$$OppName:<>$$OppRank:<>$$IsCross:<>
+        OPP_MOVE = 11    //                                                       Error:<>$$Score:<>$$OppMove:<>$$
     }
 
 
