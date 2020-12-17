@@ -102,7 +102,7 @@ namespace ServerLibrary
                 }
             }
             try { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.MATCH_HISTORY, dbConnection.GetMatchHistoryData(playerName)); }
-            catch(Exception e) { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.DB_CONNECTION_ERROR, (int)Options.MATCH_HISTORY); }
+            catch { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.DB_CONNECTION_ERROR, (int)Options.MATCH_HISTORY); }
         }
 
 
@@ -149,7 +149,7 @@ namespace ServerLibrary
 
             string passwordHash = "";
             try { passwordHash = dbConnection.GetUserPassword(username); }
-            catch(Exception e) { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.LOGIN); }
+            catch { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.LOGIN); }
 
             if (security.VerifyPassword(passwordHash, password))
             {
@@ -208,6 +208,7 @@ namespace ServerLibrary
                 {
                     bool check_move = games[matchID].move(move, players[clientID]);
 
+                    //Correct move
                     if (check_move)
                     {
                         if(players[clientID].name == games[matchID].p1.name)
@@ -309,14 +310,16 @@ namespace ServerLibrary
             {
                 p1 = games[matchID].p1;
                 p2 = games[matchID].p2;
+
             }
+
             lock(players)
             {
                 if(p1.name == playerName)
                 {
-                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p2.name, p2.elo.ToString(), p1.elo.ToString()));
+                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p2.name, p2.elo.ToString(), p1.elo.ToString(),"1"));
                 }
-                return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p1.name, p1.elo.ToString(), p2.elo.ToString()));
+                return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p1.name, p1.elo.ToString(), p2.elo.ToString(),"0"));
             }
         }
 
@@ -335,6 +338,9 @@ namespace ServerLibrary
                 return false;
             }
         }
+
+
+
 
         public int AddPlayer(Player player)
         {
