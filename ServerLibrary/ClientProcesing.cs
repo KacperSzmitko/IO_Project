@@ -79,15 +79,7 @@ namespace ServerLibrary
 
                     }
                 }
-                try
-                {
-                    players[clientID].sessionId = null;
-                }
-                catch(ArgumentOutOfRangeException err)
-                {
-                    
-                    return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGOUT, err.Message);
-                }
+                players[clientID].sessionId = null;
             }
             return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGOUT);
         }
@@ -135,7 +127,7 @@ namespace ServerLibrary
                 }
                 playersWaitingForGame.Add(clientID);
             }
-            lock (players) players[clientID].matchID = -1;
+            //lock (players) players[clientID].matchID = -1;
             return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME);
         }
 
@@ -148,8 +140,7 @@ namespace ServerLibrary
         // Try to login client
         //TODO Add username to user 
         public string Login(string msg, int clientID)
-        {
-            
+        {      
             string[] fields = msg.Split("$$", StringSplitOptions.RemoveEmptyEntries);
             string username = fields[0].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
             string password = fields[1].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
@@ -162,14 +153,9 @@ namespace ServerLibrary
 
             if (security.VerifyPassword(passwordHash, password))
             {
-                string elo = "";
+                string elo;
                 lock (players)
                 {
-                    foreach (Player p in players) {
-                        if (p.name == username && p.sessionId != null) {
-                            return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_LOGGED_IN, (int)Options.LOGIN);
-                        }
-                    } 
 
                     if (players[clientID].sessionId == null)
                     {
@@ -178,9 +164,10 @@ namespace ServerLibrary
                         elo = players[clientID].elo.ToString();
                         players[clientID].name = username;
                     }
+                    else return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_LOGGED_IN, (int)Options.LOGIN));
                     sessionId = players[clientID].sessionId;
                 }
-                return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGIN, sessionId, elo);
+                return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGIN, sessionId,elo);
             }
             else return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.INCORRECT_PASSWORD, (int)Options.LOGIN);
         }
@@ -235,15 +222,12 @@ namespace ServerLibrary
         }
 
         public string Disconnect(string msg,int clientID)
-        {
-            
+        {      
             lock (players)
             {
-                if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.DISCONNECT, "Nie jestes zalogowany");
                 players.RemoveAt(clientID);
                 return "";
             }
-
         }
 
 
@@ -330,9 +314,9 @@ namespace ServerLibrary
             {
                 if(p1.name == playerName)
                 {
-                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p2.name, p2.elo.ToString()));
+                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p2.name, p2.elo.ToString(), p1.elo.ToString()));
                 }
-                return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p1.name, p1.elo.ToString()));
+                return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p1.name, p1.elo.ToString(), p2.elo.ToString()));
             }
         }
 
