@@ -25,7 +25,7 @@ namespace ServerLibrary
                 try
                 {
                     // Options can by only in range of <0,7>
-                    if (option > 10 || option < 0) throw new ArgumentException("Invalid option!");
+                    if (option > 11 || option < 0) throw new ArgumentException("Invalid option!");
                     //GetMatchHisotry and GetRank
                     if (option == 1 || option == 2)
                     {
@@ -36,6 +36,7 @@ namespace ServerLibrary
                     {
                         AddField("OppName", fields[0], ref result);
                         AddField("OppRank", fields[1], ref result);
+                        AddField("IsCross", fields[2], ref result);
                     }
                     //Login
                     else if (option == 5)
@@ -47,6 +48,12 @@ namespace ServerLibrary
                     else if (option == 7)
                     {
                         AddField("Score", fields[0], ref result);
+                    }
+                    //OppMove
+                    else if (option == 11)
+                    {
+                        AddField("Score", fields[0], ref result);
+                        AddField("OppMove", fields[1], ref result);
                     }
 
                 }

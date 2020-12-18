@@ -50,7 +50,7 @@ namespace DbLibrary
                 connection.Close();
                 return true;
             }
-            catch (MySqlException ex)
+            catch 
             {
                 return false;
             }
