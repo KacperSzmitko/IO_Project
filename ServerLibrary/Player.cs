@@ -16,6 +16,7 @@ namespace ServerLibrary
         public bool matchActualization { get; set; }
         public int elo { get; set; }
 
+        public bool playerTurn { get; set; }
         //Index to Games array
         public int matchID { get; set; }
 
@@ -35,6 +36,7 @@ namespace ServerLibrary
             this.random = new Random();
             this.elo = 0;
             this.matchActualization = false;
+            this.playerTurn = false;
         }
     }
 }

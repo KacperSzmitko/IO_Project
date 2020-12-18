@@ -49,7 +49,6 @@ namespace ServerLibrary
         /// <returns>Server response ready to send</returns>
         public string ProccesClient(string message,int clientID)
         {
-            
             string[] fields = message.Split("$$", StringSplitOptions.RemoveEmptyEntries);
             int option = Int32.Parse(fields[0].Split(':', StringSplitOptions.RemoveEmptyEntries)[1]);
 
@@ -140,7 +139,8 @@ namespace ServerLibrary
         // Try to login client
         //TODO Add username to user 
         public string Login(string msg, int clientID)
-        {      
+        {
+
             string[] fields = msg.Split("$$", StringSplitOptions.RemoveEmptyEntries);
             string username = fields[0].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
             string password = fields[1].Split(':', StringSplitOptions.RemoveEmptyEntries)[1];
@@ -149,13 +149,20 @@ namespace ServerLibrary
 
             string passwordHash = "";
             try { passwordHash = dbConnection.GetUserPassword(username); }
-            catch { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.LOGIN); }
+            catch (Exception e) { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.LOGIN); }
 
             if (security.VerifyPassword(passwordHash, password))
             {
-                string elo;
+                string elo = "";
                 lock (players)
                 {
+                    foreach (Player p in players)
+                    {
+                        if (p.name == username && p.sessionId != null)
+                        {
+                            return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_LOGGED_IN, (int)Options.LOGIN);
+                        }
+                    }
 
                     if (players[clientID].sessionId == null)
                     {
@@ -164,10 +171,9 @@ namespace ServerLibrary
                         elo = players[clientID].elo.ToString();
                         players[clientID].name = username;
                     }
-                    else return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_LOGGED_IN, (int)Options.LOGIN));
                     sessionId = players[clientID].sessionId;
                 }
-                return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGIN, sessionId,elo);
+                return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.LOGIN, sessionId, elo);
             }
             else return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.INCORRECT_PASSWORD, (int)Options.LOGIN);
         }
@@ -211,7 +217,10 @@ namespace ServerLibrary
                     //Correct move
                     if (check_move)
                     {
-                        if(players[clientID].name == games[matchID].p1.name)
+                        games[matchID].p1.playerTurn = !games[matchID].p1.playerTurn;
+                        games[matchID].p2.playerTurn = !games[matchID].p2.playerTurn;
+                        games[matchID].lastMove = move;
+                        if (players[clientID].name == games[matchID].p1.name)
                         return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEND_MOVE, String.Format("{0}-{1}",
                             games[matchID].p1Points, games[matchID].p2Points));
                         else return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEND_MOVE, String.Format("{1}-{0}",
@@ -226,7 +235,7 @@ namespace ServerLibrary
         {      
             lock (players)
             {
-                players.RemoveAt(clientID);
+                players[clientID] = null;
                 return "";
             }
         }
@@ -310,6 +319,7 @@ namespace ServerLibrary
             {
                 p1 = games[matchID].p1;
                 p2 = games[matchID].p2;
+                p1.playerTurn = true;
 
             }
 
@@ -323,17 +333,40 @@ namespace ServerLibrary
             }
         }
 
-
+        public string SendOppMove(string msg,int clientID)
+        {
+            lock(games)
+            {
+                lock(players)
+                {
+                    string name = players[clientID].name;
+                    int p1Points = games[players[clientID].matchID].p1Points;
+                    int p2Points = games[players[clientID].matchID].p2Points;
+                    if(players[clientID].name == games[players[clientID].matchID].p1.name)
+                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.OPP_MOVE,
+                            String.Format("{0}-{1}",p1Points,p2Points),games[players[clientID].matchID].lastMove.ToString()));
+                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.OPP_MOVE,
+                            String.Format("{1}-{0}", p1Points, p2Points), games[players[clientID].matchID].lastMove.ToString()));
+                }
+            }
+        }
 
         //Returns true if game has been founded for client
         public bool CheckMatchAcctualization(int clientID)
         {
             lock (players)
             {
-                if (players[clientID].matchActualization)
+                try
                 {
-                    players[clientID].matchActualization = false;
-                    return true;
+                    if (players[clientID].matchActualization)
+                    {
+                        players[clientID].matchActualization = false;
+                        return true;
+                    }
+                }
+                catch (NullReferenceException)
+                {
+                    throw new Exception();
                 }
                 return false;
             }
@@ -348,6 +381,14 @@ namespace ServerLibrary
             return players.Count-1;
         }
 
+        public bool CheckPlayerTurn(int clientID)
+        {
+            lock(players)
+            {
+                if (players[clientID].playerTurn) return true;
+                return false;
+            }
+        }
 
 
         public ClientProcesing()
@@ -368,6 +409,7 @@ namespace ServerLibrary
             functions.Add(new Functions(Disconnect));
             functions.Add(new Functions(CheckUserName));
             functions.Add(new Functions(SendMatch));
+            functions.Add(new Functions(SendOppMove));
             matchMaking = new Thread(MatchMaking);
             security = new pbkdf2();
             matchMaking.Start();

@@ -15,6 +15,7 @@ namespace ServerLibrary
         public int p2Points { get; set; }
         public int pointsToWin { get; set; }
 		public bool roundEnd { get; set; }
+		public int lastMove { get; set; }
 		public List<int> p1Positions { get; set; }
 		public List<int> p2Positions { get; set; }
 

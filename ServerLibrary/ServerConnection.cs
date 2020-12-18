@@ -88,10 +88,19 @@ namespace ServerLibrary
                         message = Encoding.ASCII.GetBytes(sendMessage);
                         stream.Write(message);
                     }
+
+                    //Send opponent move
+                    if(menager.CheckPlayerTurn(clientID))
+                    {
+                        sendMessage = menager.ProccesClient("Option:11$$", clientID);
+                        message = Encoding.ASCII.GetBytes(sendMessage);
+                        stream.Write(message);
+                    }
+
                 }
                 catch
                 {
-                    break;
+                    return;
                 }
 
             }
