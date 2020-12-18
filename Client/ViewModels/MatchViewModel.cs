@@ -68,13 +68,9 @@ namespace Client.ViewModels
             }
         }
 
-        
-
-
-
-        public MatchViewModel(ServerConnection connection, Navigator navigator, User user, Opponent opponent, bool userStartsRound) : base(connection, navigator) {
-            this.model = new MatchModel(connection, user, opponent, userStartsRound);
-            if (!userStartsRound) getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
+        public MatchViewModel(ServerConnection connection, Navigator navigator, User user, Opponent opponent) : base(connection, navigator) {
+            this.model = new MatchModel(connection, user, opponent);
+            if (opponent.StartsMatch) getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
         }
 
         private void SendUserMoveAsync(int ci) {

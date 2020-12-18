@@ -8,13 +8,17 @@ namespace Client
     {
         private readonly string username;
         private readonly int elo;
+        private readonly bool startsMatch;
 
         public string Username { get { return username; } }
         public int Elo { get { return elo; } }
 
-        public Opponent(string username, int elo) {
+        public bool StartsMatch { get { return startsMatch; } }
+
+        public Opponent(string username, int elo, bool startsMatch) {
             this.username = username;
             this.elo = elo;
+            this.startsMatch = startsMatch;
         }
     }
 }

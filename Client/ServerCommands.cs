@@ -46,12 +46,44 @@ namespace Client
         {
             public readonly int error;
             public readonly string opponentName;
-            public int opponentRank;
-            public GetFoundMatchResponse(int error, string opponentName, int opponentRank) {
+            public readonly int opponentRank;
+            public readonly int isCross;
+
+            public GetFoundMatchResponse(int error, string opponentName, int opponentRank, int isCross) {
                 this.error = error;
                 this.opponentName = opponentName;
                 this.opponentRank = opponentRank;
+                this.isCross = isCross;
             }
+        }
+
+        public struct SendUserMoveResponse
+        {
+            public readonly int error;
+            public readonly int userScore;
+            public readonly int opponentScore;
+
+            public SendUserMoveResponse(int error, int userScore, int opponentScore) {
+                this.error = error;
+                this.userScore = userScore;
+                this.opponentScore = opponentScore;
+            }
+        }
+
+        public struct GetOpponentMoveResponse
+        {
+            public readonly int error;
+            public readonly int userScore;
+            public readonly int opponentScore;
+            public readonly int opponentMove;
+
+            public GetOpponentMoveResponse(int error, int userScore, int opponentScore, int opponentMove) {
+                this.error = error;
+                this.userScore = userScore;
+                this.opponentScore = opponentScore;
+                this.opponentMove = opponentMove;
+            }
+
         }
 
         //******************** TOOLS FOR CREATING COMMANDS ********************
@@ -188,8 +220,24 @@ namespace Client
 
         public static GetFoundMatchResponse GetFoundMatchCommand_responseOnly(ref ServerConnection connection) {
             string[] args = GetArgArrayFromResponse(connection.ReadMessage());
-            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetFoundMatchResponse(Int32.Parse(args[0]), "", 0);
-            return new GetFoundMatchResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]));
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetFoundMatchResponse(Int32.Parse(args[0]), "", 0, 0);
+            return new GetFoundMatchResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]), Int32.Parse(args[3]));
+        }
+
+        public static SendUserMoveResponse SendUserMoveCommand(ref ServerConnection connection, string sessionID, int move) {
+            string command = CreateClientMessage((int)Options.SEND_MOVE, sessionID, move.ToString());
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new SendUserMoveResponse(Int32.Parse(args[0]), 0, 0);
+            string[] score = args[1].Split("-", StringSplitOptions.RemoveEmptyEntries);
+            return new SendUserMoveResponse(Int32.Parse(args[0]), Int32.Parse(score[0]), Int32.Parse(score[1]));
+        }
+
+        public static GetOpponentMoveResponse GetOpponentMoveCommand_responseOnly(ref ServerConnection connection) {
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetOpponentMoveResponse(Int32.Parse(args[0]), 0, 0, 0);
+            string[] score = args[1].Split("-", StringSplitOptions.RemoveEmptyEntries);
+            return new GetOpponentMoveResponse(Int32.Parse(args[0]), Int32.Parse(score[0]), Int32.Parse(score[1]), Int32.Parse(args[2]));
         }
     }
 }

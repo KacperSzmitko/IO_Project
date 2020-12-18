@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -32,21 +33,39 @@ namespace Client.Models
             get { return opponentScore; }
         }
 
-        public MatchModel(ServerConnection connection, User user, Opponent opponent, bool userStartsRound) : base(connection, user) {
+        public MatchModel(ServerConnection connection, User user, Opponent opponent) : base(connection, user) {
             this.opponent = opponent;
-            this.userStartsRound = userStartsRound;
-            this.userTurn = userStartsRound;
+            this.userStartsRound = !opponent.StartsMatch; //"o" always starts
+            this.userTurn = !opponent.StartsMatch;
             this.userScore = 0;
             this.opponentScore = 0;
             this.cellsStatus = EmptyCells();
         }
 
-        public bool SendUserMove(int ci) {
-            throw new NotImplementedException();
+        public bool SendUserMove(int move) {
+            ServerCommands.SendUserMoveResponse response = ServerCommands.SendUserMoveCommand(ref connection, user.SessionID, move);
+            if (response.error == (int)ErrorCodes.NO_ERROR) {
+                userTurn = false;
+                userScore = response.userScore;
+                opponentScore = response.opponentScore;
+                if (userStartsRound) CellsStatus[move] = CellStatus.USER_O;
+                else CellsStatus[move] = CellStatus.USER_X;
+                return true;
+            }
+            else throw new Exception(GetErrorCodeName(response.error));
         }
 
         public bool GetOpponentMove() {
-            throw new NotImplementedException();
+            ServerCommands.GetOpponentMoveResponse response = ServerCommands.GetOpponentMoveCommand_responseOnly(ref connection);
+            if (response.error == (int)ErrorCodes.NO_ERROR) {
+                userTurn = true;
+                userScore = response.userScore;
+                opponentScore = response.opponentScore;
+                if (userStartsRound) CellsStatus[response.opponentMove] = CellStatus.OPPONENT_X;
+                else CellsStatus[response.opponentMove] = CellStatus.OPPONENT_O;
+                return true;
+            }
+            else throw new Exception(GetErrorCodeName(response.error));
         }
 
         private CellStatus[] EmptyCells() {
