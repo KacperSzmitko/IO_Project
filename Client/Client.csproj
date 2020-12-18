@@ -7,7 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Images\cell_empty.png" />
+    <None Remove="Resources\Images\cell_o_blue.png" />
+    <None Remove="Resources\Images\cell_o_red.png" />
+    <None Remove="Resources\Images\cell_x_blue.png" />
+    <None Remove="Resources\Images\cell_x_red.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Images\cell_empty.png" />
+    <Resource Include="Resources\Images\cell_o_blue.png" />
+    <Resource Include="Resources\Images\cell_o_red.png" />
+    <Resource Include="Resources\Images\cell_x_blue.png" />
+    <Resource Include="Resources\Images\cell_x_red.png" />
   </ItemGroup>
 
 </Project>

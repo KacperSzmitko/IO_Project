@@ -9,7 +9,97 @@
              >
 
     <Border Padding="5 5 5 5">
-        
+        <StackPanel Orientation="Vertical">
+            <Grid Width="360" Height="360" HorizontalAlignment="Center" Margin="0 40 0 0">
+
+                <Grid.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="Black"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border x:Name="border" Width="{TemplateBinding Width}"
+                                    Height="{TemplateBinding Height}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    >
+                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        TextElement.Foreground="{TemplateBinding Foreground}"
+                                        TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                        TextElement.FontSize="{TemplateBinding FontSize}"
+                                        TextElement.FontStretch="{TemplateBinding FontStretch}"
+                                        TextElement.FontWeight="{TemplateBinding FontWeight}"
+                                        />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" TargetName="border" Value="#FFBEE6FD"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Grid.Resources>
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="120"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="120"/>
+                    <RowDefinition Height="120"/>
+                    <RowDefinition Height="120"/>
+                </Grid.RowDefinitions>
+
+                <Button Grid.Column="0" Grid.Row="0" BorderThickness="0 0 2 2" Command="{Binding SetCellCommand}" CommandParameter="0">
+                    <Image Source="{Binding CellsStatus[0], Converter={StaticResource cellStatusToImgPathConverter}}" Width="90" Height="90"/>
+                </Button>
+                <Button Grid.Column="1" Grid.Row="0" BorderThickness="0 0 2 2" Command="{Binding SetCellCommand}" CommandParameter="1">
+                    <Image Source="{Binding CellsStatus[1], Converter={StaticResource cellStatusToImgPathConverter}}" Width="90" Height="90"/>
+                </Button>
+                <Button Grid.Column="2" Grid.Row="0" BorderThickness="0 0 0 2" Command="{Binding SetCellCommand}" CommandParameter="2">
+                    <Image Source="{Binding CellsStatus[2], Converter={StaticResource cellStatusToImgPathConverter}}" Width="90" Height="90"/>
+                </Button>
+                <Button Grid.Column="0" Grid.Row="1" BorderThickness="0 0 2 2" Command="{Binding SetCellCommand}" CommandParameter="3">
+                    <Image Source="{Binding CellsStatus[3], Converter={StaticResource cellStatusToImgPathConverter}}" Width="90" Height="90"/>
+                </Button>
+                <Button Grid.Column="1" Grid.Row="1" BorderThickness="0 0 2 2" Command="{Binding SetCellCommand}" CommandParameter="4">
+                    <Image Source="{Binding CellsStatus[4], Converter={StaticResource cellStatusToImgPathConverter}}" Width="90" Height="90"/>
+                </Button>
+                <Button Grid.Column="2" Grid.Row="1" BorderThickness="0 0 0 2" Command="{Binding SetCellCommand}" CommandParameter="5">
+                    <Image Source="{Binding CellsStatus[5], Converter={StaticResource cellStatusToImgPathConverter}}" Width="90" Height="90"/>
+                </Button>
+                <Button Grid.Column="0" Grid.Row="2" BorderThickness="0 0 2 0" Command="{Binding SetCellCommand}" CommandParameter="6">
+                    <Image Source="{Binding CellsStatus[6], Converter={StaticResource cellStatusToImgPathConverter}}" Width="90" Height="90"/>
+                </Button>
+                <Button Grid.Column="1" Grid.Row="2" BorderThickness="0 0 2 0" Command="{Binding SetCellCommand}" CommandParameter="7" >
+                    <Image Source="{Binding CellsStatus[7], Converter={StaticResource cellStatusToImgPathConverter}}" Width="90" Height="90"/>
+                </Button>
+                <Button Grid.Column="2" Grid.Row="2" BorderThickness="0 0 0 0" Command="{Binding SetCellCommand}" CommandParameter="8">
+                    <Image Source="{Binding CellsStatus[8], Converter={StaticResource cellStatusToImgPathConverter}}" Width="90" Height="90"/>
+                </Button>
+
+            </Grid>
+            <TextBlock HorizontalAlignment="Center" Margin="0 20 0 0" FontSize="30" Text="{Binding UserTurnInfo}" d:Text="Twój ruch"/>
+            <TextBlock HorizontalAlignment="Center" Margin="0 20 0 0" FontSize="22" Text="Wynik"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="150" TextAlignment="Left" FontSize="22" Text="{Binding UserName}" d:Text="test"/>
+                <TextBlock Width="40"  TextAlignment="Left" FontSize="22" Text="{Binding UserScore}" d:Text="0"/>
+                <TextBlock Width="10"  TextAlignment="Center" FontSize="22" Text=":"/>
+                <TextBlock Width="40"  TextAlignment="Right" FontSize="22" Text="{Binding OpponentScore}" d:Text="0"/>
+                <TextBlock Width="150" TextAlignment="Right" FontSize="22" Text="{Binding UserName}" d:Text="test2"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="195" TextAlignment="Left" FontSize="16" Text="{Binding UserElo}" d:Text="1000"/>
+                <TextBlock Width="195" TextAlignment="Right" FontSize="16" Text="{Binding OpponentElo}" d:Text="1000"/>
+            </StackPanel>
+
+        </StackPanel>
     </Border>
 
 </UserControl>
