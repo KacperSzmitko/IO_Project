@@ -18,7 +18,7 @@ namespace Client.Models
         public Opponent GetFoundMatch() {
             ServerCommands.GetFoundMatchResponse response = ServerCommands.GetFoundMatchCommand_responseOnly(ref connection);
             if (response.error != (int)ErrorCodes.NO_ERROR) throw new Exception(GetErrorCodeName(response.error));
-            return new Opponent(response.opponentName, response.opponentRank, Convert.ToBoolean(response.isCross));
+            return new Opponent(response.opponentName, response.opponentRank, !Convert.ToBoolean(response.isCross));
         }
 
 

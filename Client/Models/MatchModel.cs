@@ -38,7 +38,7 @@ namespace Client.Models
 
         public MatchModel(ServerConnection connection, User user, Opponent opponent) : base(connection, user) {
             this.opponent = opponent;
-            this.userStartsRound = !opponent.StartsMatch; //"o" always starts
+            this.userStartsRound = !opponent.StartsMatch; //"x" always starts
             this.userTurn = !opponent.StartsMatch;
             this.userScore = 0;
             this.opponentScore = 0;
@@ -55,14 +55,16 @@ namespace Client.Models
                 userTurn = false;
                 userScore = response.userScore;
                 opponentScore = response.opponentScore;
-                if (userStartsRound) CellsStatus[move] = CellStatus.USER_O;
-                else CellsStatus[move] = CellStatus.USER_X;
+                if (userStartsRound) CellsStatus[move] = CellStatus.USER_X;
+                else CellsStatus[move] = CellStatus.USER_O;
 
                 if (userScore > old_userScore) {
+                    old_userScore = userScore;
                     roundCounter++;
                     return MoveResult.USER_WON;
                 }
                 else if (opponentScore > old_opponentScore) {
+                    old_opponentScore = opponentScore;
                     roundCounter++;
                     return MoveResult.USER_LOST;
                 }
@@ -77,14 +79,16 @@ namespace Client.Models
                 userTurn = true;
                 userScore = response.userScore;
                 opponentScore = response.opponentScore;
-                if (userStartsRound) CellsStatus[response.opponentMove] = CellStatus.OPPONENT_X;
-                else CellsStatus[response.opponentMove] = CellStatus.OPPONENT_O;
+                if (userStartsRound) CellsStatus[response.opponentMove] = CellStatus.OPPONENT_O;
+                else CellsStatus[response.opponentMove] = CellStatus.OPPONENT_X;
 
                 if (userScore > old_userScore) {
+                    old_userScore = userScore;
                     roundCounter++;
                     return MoveResult.USER_WON;
                 }
                 else if (opponentScore > old_opponentScore) {
+                    old_opponentScore = opponentScore;
                     roundCounter++;
                     return MoveResult.USER_LOST;
                 }
