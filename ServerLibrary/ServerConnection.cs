@@ -100,7 +100,7 @@ namespace ServerLibrary
                     int endGame = menager.CheckEndGame(clientID);
                     //Send opponent move
 
-                    if (sendMove)
+                    if (sendMove && endGame != 1)
                     {
                         sendMessage = menager.ProccesClient("Option:11$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);
