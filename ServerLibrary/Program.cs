@@ -9,8 +9,8 @@ namespace ServerLibrary
     {
         static void Main(string[] args)
         {
-            ClientProcesing cp = new ClientProcesing();
-            Console.WriteLine((int)cp.CalcElo(1200, 1000, 1, 30));
+            DbMethods db = new DbMethods();
+            db.MatchHistoryUpdate("test", "test2", "test", "1200", "1400", "23", "56", "5", "3");
 
             //ServerConnection server = new ServerConnection();
             //server.RunServer();

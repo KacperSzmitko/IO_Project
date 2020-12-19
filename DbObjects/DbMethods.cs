@@ -251,6 +251,51 @@ namespace DbLibrary
             }
         }
 
+        public bool MatchHistoryUpdate(string p1Name, string p2Name, string winner, string p1Elo, string p2Elo, string p1EloLoss,
+            string p2EloLoss, string p1Points, string p2Points)
+        {
+            string query = String.Format("SELECT id FROM user WHERE login = '{0}'", p1Name);
+            if (this.OpenConnection() == true)
+            {
+                //Get id
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlDataReader dataReader = cmd.ExecuteReader();
+                dataReader.Read();
+                string p1ID = dataReader.GetString(0);
+                dataReader.Close();
+
+                query = String.Format("SELECT id FROM user WHERE login = '{0}'", p2Name);
+                cmd = new MySqlCommand(query, connection);
+                dataReader = cmd.ExecuteReader();
+                dataReader.Read();
+                string p2ID = dataReader.GetString(0);
+                dataReader.Close();
+
+                query = String.Format("SELECT id FROM user WHERE login = '{0}'", winner);
+                cmd = new MySqlCommand(query, connection);
+                dataReader = cmd.ExecuteReader();
+                dataReader.Read();
+                string winnerID = dataReader.GetString(0);
+                dataReader.Close();
+
+
+                query = String.Format("INSERT INTO match_history(player1_id,player2_id,winner,end_time,player1_elo,player2_elo,player1_elo_loss,player2_elo_loss,player1_points,player2_points) VALUES " +
+                  "('{0}','{1}','{2}',NOW(),'{3}','{4}','{5}','{6}','{7}','{8}')"
+                  , p1ID, p2ID,winnerID,p1Elo,p2Elo,p1EloLoss,p2EloLoss,p1Points,p2Points);
+
+                cmd = new MySqlCommand(query, connection);
+                dataReader = cmd.ExecuteReader();
+                dataReader.Close();
+                this.CloseConnection();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
         public bool CheckIfNameExist(string username)
         {
             string query = string.Format("SELECT login FROM user WHERE login = '{0}'", username);
