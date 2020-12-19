@@ -16,6 +16,11 @@ namespace ServerLibrary
         public bool matchActualization { get; set; }
         public int elo { get; set; }
 
+        //Tells if player won a game
+        public bool won { get; set; }
+
+        public bool lose { get; set; }
+        //Tells whos turn is now
         public bool playerTurn { get; set; }
         //Index to Games array
         public int matchID { get; set; }
@@ -37,6 +42,8 @@ namespace ServerLibrary
             this.elo = 0;
             this.matchActualization = false;
             this.playerTurn = false;
+            this.won = false;
+            this.lose = false;
         }
     }
 }

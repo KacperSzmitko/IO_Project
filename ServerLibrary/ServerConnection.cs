@@ -92,12 +92,24 @@ namespace ServerLibrary
                     bool test = menager.CheckPlayerTurn(clientID);
 
                     //Send opponent move
-                    
-                    
-                    
+                                                     
                     if (test)
                     {
                         sendMessage = menager.ProccesClient("Option:11$$", clientID);
+                        message = Encoding.ASCII.GetBytes(sendMessage);
+                        stream.Write(message);
+                    }
+
+                    if(menager.CheckEndGame(clientID))
+                    {
+                        sendMessage = menager.ProccesClient("Option:12$$", clientID);
+                        message = Encoding.ASCII.GetBytes(sendMessage);
+                        stream.Write(message);
+                    }
+
+                    if(menager.CheckEndGame(clientID))
+                    {
+                        sendMessage = menager.ProccesClient("Option:4$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);
                         stream.Write(message);
                     }

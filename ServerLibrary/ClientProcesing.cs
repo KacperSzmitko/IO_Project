@@ -15,7 +15,7 @@ namespace ServerLibrary
     /// </summary>
     public class ClientProcesing
     {
-        //TODO  EndGame  SendMove
+
 
         /// <summary>
         /// Delegate which represents function used to procces client data
@@ -130,11 +130,6 @@ namespace ServerLibrary
             return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME);
         }
 
-        private string EndGame(string msg, int clientID)
-        {
-            
-            return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.END_GAME);
-        }
 
         // Try to login client
         //TODO Add username to user 
@@ -245,7 +240,7 @@ namespace ServerLibrary
                                     this.players[playersWaiting[i]].matchID = matchID;
                                     this.players[playersWaiting[i]].matchActualization = true;
                                 }
-                                lock (games) games.Add(new Gameplay(this.players[waitingPlayer], this.players[playersWaiting[i]], 9, 5));
+                                lock (games) games.Add(new Gameplay(this.players[waitingPlayer], this.players[playersWaiting[i]], 9, 1));
 
 
                                 lock (this.playersWaitingForGame)
@@ -263,7 +258,7 @@ namespace ServerLibrary
                     }
                     if (found) break;
                 }
-                Thread.Sleep(5000);
+                Thread.Sleep(3000);
             }
         }
 
@@ -345,12 +340,35 @@ namespace ServerLibrary
                         {
                             games[matchID].p1.playerTurn = false;
                             games[matchID].p2.playerTurn = true;
+                            //Player1 won game
+                            if(games[matchID].p1Points >= games[matchID].pointsToWin )
+                            {
+                                games[matchID].p1.elo = (int)CalcElo(games[matchID].p1.elo, games[matchID].p2.elo, 1, 30);
+                                games[matchID].p2.elo = (int)CalcElo(games[matchID].p2.elo, games[matchID].p1.elo, 0, 30);
+                                dbConnection.EloUpdate(games[matchID].p1.name, games[matchID].p1.elo);
+                                dbConnection.EloUpdate(games[matchID].p2.name, games[matchID].p2.elo);
+
+                                games[matchID].p1.won = true;
+                                games[matchID].p2.lose = true;
+                            }
                         }
                         else
                         {
                             games[matchID].p1.playerTurn = true;
                             games[matchID].p2.playerTurn = false;
+                            //Player2 won game
+                            if (games[matchID].p2Points >= games[matchID].pointsToWin)
+                            {
+                                games[matchID].p1.elo = (int)CalcElo(games[matchID].p1.elo, games[matchID].p2.elo, 0, 30);
+                                games[matchID].p2.elo = (int)CalcElo(games[matchID].p2.elo, games[matchID].p1.elo, 1, 30);
+                                dbConnection.EloUpdate(games[matchID].p1.name, games[matchID].p1.elo);
+                                dbConnection.EloUpdate(games[matchID].p2.name, games[matchID].p2.elo);
+
+                                games[matchID].p1.lose = true;
+                                games[matchID].p2.won = true;
+                            }
                         }
+
 
                         games[matchID].lastMove = move;
                         if (players[clientID].name == games[matchID].p1.name)
@@ -364,6 +382,25 @@ namespace ServerLibrary
             }
         }
 
+        public string EndGameMessage(string msg, int clientID)
+        {
+            lock(games)
+            {
+                lock(players)
+                {
+                    if(games[players[clientID].matchID].p1.name == players[clientID].name)
+                    {
+                        return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.END_GAME, games[players[clientID].matchID].p1.elo.ToString(),
+                            games[players[clientID].matchID].p2.elo.ToString());
+                    }
+                    else
+                    {
+                        return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.END_GAME, games[players[clientID].matchID].p2.elo.ToString(),
+                            games[players[clientID].matchID].p1.elo.ToString());
+                    }
+                }
+            }
+        }
 
         //Returns true if game has been founded for client
         public bool CheckMatchAcctualization(int clientID)
@@ -407,6 +444,29 @@ namespace ServerLibrary
             }
         }
 
+        public bool CheckEndGame(int clientID)
+        {
+            lock(players)
+            {
+                lock(games)
+                {
+                    if(players[clientID].won || players[clientID].lose)
+                    {
+                        return true;
+                    }
+                    
+                }
+            }
+            return false;
+        }
+
+        public double CalcElo(double playerElo,double oppElo,int won,int k)
+        {
+            double p1 = (1.0/(1.0 + Math.Pow(10,(oppElo - playerElo)/400.0)));
+            return playerElo + k * (won - p1);
+        }
+
+
 
         public ClientProcesing()
         {
@@ -419,7 +479,7 @@ namespace ServerLibrary
             functions.Add(new Functions(MatchHistory));
             functions.Add(new Functions(Rank));
             functions.Add(new Functions(SearchGame));
-            functions.Add(new Functions(EndGame));
+            functions.Add(new Functions(EndGameMessage));
             functions.Add(new Functions(Login));
             functions.Add(new Functions(CreateUser));
             functions.Add(new Functions(SendMove));
@@ -427,6 +487,7 @@ namespace ServerLibrary
             functions.Add(new Functions(CheckUserName));
             functions.Add(new Functions(SendMatch));
             functions.Add(new Functions(SendOppMove));
+
             matchMaking = new Thread(MatchMaking);
             security = new pbkdf2();
             matchMaking.Start();

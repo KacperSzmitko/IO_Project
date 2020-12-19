@@ -38,6 +38,12 @@ namespace ServerLibrary
                         AddField("OppRank", fields[1], ref result);
                         AddField("IsCross", fields[2], ref result);
                     }
+                    //EndGame
+                    else if (option == 4)
+                    {
+                        AddField("PlayerElo", fields[0], ref result);
+                        AddField("OppElo", fields[1], ref result);
+                    }
                     //Login
                     else if (option == 5)
                     {
@@ -55,6 +61,7 @@ namespace ServerLibrary
                         AddField("Score", fields[0], ref result);
                         AddField("OppMove", fields[1], ref result);
                     }
+
 
                 }
                 catch (ArgumentOutOfRangeException)

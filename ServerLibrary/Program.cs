@@ -9,8 +9,8 @@ namespace ServerLibrary
     {
         static void Main(string[] args)
         {
-            DbMethods m = new DbMethods();
-            Console.WriteLine(TransmisionProtocol.CreateServerMessage(0, 1, m.GetMatchHistoryData("test")));
+            ClientProcesing cp = new ClientProcesing();
+            Console.WriteLine((int)cp.CalcElo(1200, 1000, 1, 30));
 
             //ServerConnection server = new ServerConnection();
             //server.RunServer();

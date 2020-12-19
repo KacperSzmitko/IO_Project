@@ -226,6 +226,31 @@ namespace DbLibrary
             }
         }
 
+        public bool EloUpdate(string username, int newElo)
+        {
+            string query = String.Format("SELECT id FROM user WHERE login = '{0}'",username);
+            if (this.OpenConnection() == true)
+            {
+                //Get id
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlDataReader dataReader = cmd.ExecuteReader();
+                dataReader.Read();
+                string userID = dataReader.GetString(0);
+                dataReader.Close();
+
+                query = String.Format("UPDATE ranking SET elo = '{0}' where user_id = '{1}'", newElo,userID);
+                cmd = new MySqlCommand(query, connection);
+                dataReader = cmd.ExecuteReader();
+                dataReader.Close();
+                this.CloseConnection();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public bool CheckIfNameExist(string username)
         {
             string query = string.Format("SELECT login FROM user WHERE login = '{0}'", username);
