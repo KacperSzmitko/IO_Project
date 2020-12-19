@@ -343,10 +343,20 @@ namespace ServerLibrary
                             //Player1 won game
                             if(games[matchID].p1Points >= games[matchID].pointsToWin )
                             {
+                                int p1Elo = games[matchID].p1.elo;
+                                int p2Elo = games[matchID].p2.elo;
+
                                 games[matchID].p1.elo = (int)CalcElo(games[matchID].p1.elo, games[matchID].p2.elo, 1, 30);
                                 games[matchID].p2.elo = (int)CalcElo(games[matchID].p2.elo, games[matchID].p1.elo, 0, 30);
                                 dbConnection.EloUpdate(games[matchID].p1.name, games[matchID].p1.elo);
                                 dbConnection.EloUpdate(games[matchID].p2.name, games[matchID].p2.elo);
+
+                                dbConnection.EloUpdate(games[matchID].p1.name, games[matchID].p1.elo);
+                                dbConnection.EloUpdate(games[matchID].p2.name, games[matchID].p2.elo);
+                                Gameplay game = games[players[clientID].matchID];
+
+                                dbConnection.MatchHistoryUpdate(game.p1.name, game.p2.name, game.p1.name, game.p1.elo.ToString(), game.p2.elo.ToString(),
+                                    (p1Elo - game.p1.elo).ToString(), (p2Elo - game.p2.elo).ToString(), game.p1Points.ToString(), game.p2Points.ToString());
 
                                 games[matchID].p1.won = true;
                                 games[matchID].p2.lose = true;
@@ -359,10 +369,17 @@ namespace ServerLibrary
                             //Player2 won game
                             if (games[matchID].p2Points >= games[matchID].pointsToWin)
                             {
+                                int p1Elo = games[matchID].p1.elo;
+                                int p2Elo = games[matchID].p2.elo;
                                 games[matchID].p1.elo = (int)CalcElo(games[matchID].p1.elo, games[matchID].p2.elo, 0, 30);
                                 games[matchID].p2.elo = (int)CalcElo(games[matchID].p2.elo, games[matchID].p1.elo, 1, 30);
+
                                 dbConnection.EloUpdate(games[matchID].p1.name, games[matchID].p1.elo);
                                 dbConnection.EloUpdate(games[matchID].p2.name, games[matchID].p2.elo);
+                                Gameplay game = games[players[clientID].matchID];
+
+                                dbConnection.MatchHistoryUpdate(game.p1.name, game.p2.name, game.p2.name, game.p1.elo.ToString(), game.p2.elo.ToString(),
+                                    (p1Elo - game.p1.elo).ToString(), (p2Elo - game.p2.elo).ToString(), game.p1Points.ToString(), game.p2Points.ToString());
 
                                 games[matchID].p1.lose = true;
                                 games[matchID].p2.won = true;
