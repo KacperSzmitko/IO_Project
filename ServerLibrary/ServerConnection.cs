@@ -89,8 +89,13 @@ namespace ServerLibrary
                         stream.Write(message);
                     }
 
+                    bool test = menager.CheckPlayerTurn(clientID);
+
                     //Send opponent move
-                    if(menager.CheckPlayerTurn(clientID))
+                    
+                    
+                    
+                    if (test)
                     {
                         sendMessage = menager.ProccesClient("Option:11$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);

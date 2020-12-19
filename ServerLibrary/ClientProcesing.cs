@@ -340,7 +340,9 @@ namespace ServerLibrary
                     //Correct move
                     if (check_move)
                     {
-                        if (games[matchID].roundEnd) games[matchID].roundEnd = false;
+                        if (games[matchID].roundEnd) {
+                            games[matchID].roundEnd = false;
+                        }
                         games[matchID].p1.playerTurn = !games[matchID].p1.playerTurn;
                         games[matchID].p2.playerTurn = !games[matchID].p2.playerTurn;
                         games[matchID].lastMove = move;
@@ -389,7 +391,9 @@ namespace ServerLibrary
             {
                 lock (games)
                 {
-                    if (players[clientID].playerTurn && !games[players[clientID].matchID].roundEnd) return true;
+                    if (players[clientID].playerTurn && !games[players[clientID].matchID].roundEnd) {
+                        return true;
+                    }
                     return false;
                 }
             }

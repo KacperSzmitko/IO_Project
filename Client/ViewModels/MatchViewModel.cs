@@ -61,7 +61,9 @@ namespace Client.ViewModels
                 if (setCellCommand == null) {
                     setCellCommand = new RelayCommand(cellIndex => {
                         int ci = Int32.Parse((string)cellIndex);
+                        model.UserTurn = false;
                         sendUserMoveThread = new Thread(() => SendUserMoveAsync(ci));
+                        sendUserMoveThread.Start();
                     }, cellIndex => {
                         int ci = Int32.Parse((string)cellIndex);
                         if (model.CellsStatus[ci] == CellStatus.EMPTY && model.UserTurn) return true;
@@ -74,7 +76,10 @@ namespace Client.ViewModels
 
         public MatchViewModel(ServerConnection connection, Navigator navigator, User user, Opponent opponent) : base(connection, navigator) {
             this.model = new MatchModel(connection, user, opponent);
-            if (opponent.StartsMatch) getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
+            if (opponent.StartsMatch) {
+                getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
+                getOpponentMoveThread.Start();
+            }
         }
 
         private void SendUserMoveAsync(int ci) {
@@ -82,6 +87,7 @@ namespace Client.ViewModels
             UpdateProperties();
             if (moveResult == MoveResult.USER_WON || moveResult == MoveResult.USER_LOST) model.EmptyCells();
             getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
+            getOpponentMoveThread.Start();
         }
 
         private void GetOpponentMoveAsync() {

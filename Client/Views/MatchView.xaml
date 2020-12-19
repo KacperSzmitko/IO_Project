@@ -92,7 +92,7 @@
                 <TextBlock Width="40"  TextAlignment="Left" FontSize="22" Text="{Binding UserScore}" d:Text="0"/>
                 <TextBlock Width="10"  TextAlignment="Center" FontSize="22" Text=":"/>
                 <TextBlock Width="40"  TextAlignment="Right" FontSize="22" Text="{Binding OpponentScore}" d:Text="0"/>
-                <TextBlock Width="150" TextAlignment="Right" FontSize="22" Text="{Binding UserName}" d:Text="test2"/>
+                <TextBlock Width="150" TextAlignment="Right" FontSize="22" Text="{Binding OpponentName}" d:Text="test2"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="195" TextAlignment="Left" FontSize="16" Text="{Binding UserElo}" d:Text="1000"/>

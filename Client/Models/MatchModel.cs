@@ -25,6 +25,7 @@ namespace Client.Models
 
         public bool UserTurn {
             get { return userTurn; }
+            set { userTurn = value; }
         }
 
         public int UserScore {
