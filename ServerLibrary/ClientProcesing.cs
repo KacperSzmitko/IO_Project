@@ -461,20 +461,29 @@ namespace ServerLibrary
             }
         }
 
-        public bool CheckEndGame(int clientID)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="clientID"></param>
+        /// <returns>0 - No end game  1 - Player won game  2 - Player lost game</returns>
+        public int CheckEndGame(int clientID)
         {
             lock(players)
             {
                 lock(games)
                 {
-                    if(players[clientID].won || players[clientID].lose)
+                    if(players[clientID].won)
                     {
-                        return true;
+                        return 1;
                     }
+                    else if(players[clientID].lose)
+                    {
+                        return 2;
+                    }
+                    return 0;
                     
                 }
             }
-            return false;
         }
 
         public double CalcElo(double playerElo,double oppElo,int won,int k)

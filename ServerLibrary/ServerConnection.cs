@@ -38,36 +38,43 @@ namespace ServerLibrary
             Task.Run(() => { ServerMessagesAsync(stream,clientID); });
             while (true)
             {
-                //Read message
-                //CancellationTokenSource cts = new CancellationTokenSource(1000);
-                string sendMessage = "";
-                byte[] buffer = new byte[2048];
-                StringBuilder messageData = new StringBuilder();
-                int bytes = -1;
-
-                //bytes = await stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
-                bytes = await stream.ReadAsync(buffer, 0, buffer.Length);
-
-                //Decode message
-                Decoder decoder = Encoding.ASCII.GetDecoder();
-                char[] chars = new char[decoder.GetCharCount(buffer, 0, bytes)];
-                decoder.GetChars(buffer, 0, bytes, chars, 0);
-                messageData.Append(chars);
-
-                //Prepare response
-                sendMessage = menager.ProccesClient(messageData.ToString(), clientID);
-
-                //Disconnection
-                if (sendMessage == "")
+                try
                 {
-                    message = Encoding.ASCII.GetBytes("Response:0$$");
-                    stream.Write(message);
-                    break;
-                }
-                message = Encoding.ASCII.GetBytes(sendMessage);
+                    //Read message
+                    //CancellationTokenSource cts = new CancellationTokenSource(1000);
+                    string sendMessage = "";
+                    byte[] buffer = new byte[2048];
+                    StringBuilder messageData = new StringBuilder();
+                    int bytes = -1;
 
-                //Send response
-                stream.Write(message);
+                    //bytes = await stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
+                    bytes = await stream.ReadAsync(buffer, 0, buffer.Length);
+
+                    //Decode message
+                    Decoder decoder = Encoding.ASCII.GetDecoder();
+                    char[] chars = new char[decoder.GetCharCount(buffer, 0, bytes)];
+                    decoder.GetChars(buffer, 0, bytes, chars, 0);
+                    messageData.Append(chars);
+
+                    //Prepare response
+                    sendMessage = menager.ProccesClient(messageData.ToString(), clientID);
+
+                    //Disconnection
+                    if (sendMessage == "")
+                    {
+                        message = Encoding.ASCII.GetBytes("Response:0$$");
+                        stream.Write(message);
+                        break;
+                    }
+                    message = Encoding.ASCII.GetBytes(sendMessage);
+
+                    //Send response
+                    stream.Write(message);
+                }
+                catch
+                {
+                    return;
+                }
             }
         }
 
@@ -89,20 +96,26 @@ namespace ServerLibrary
                         stream.Write(message);
                     }
 
-                    bool test = menager.CheckPlayerTurn(clientID);
-
+                    bool sendMove = menager.CheckPlayerTurn(clientID);
+                    int endGame = menager.CheckEndGame(clientID);
                     //Send opponent move
-                                                     
-                    if (test)
+
+                    if (sendMove)
                     {
                         sendMessage = menager.ProccesClient("Option:11$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);
                         stream.Write(message);
+
+                        if(endGame == 2)
+                        {
+                            sendMessage = menager.ProccesClient("Option:4$$", clientID);
+                            message = Encoding.ASCII.GetBytes(sendMessage);
+                            stream.Write(message);
+
+                        }
                     }
 
-                    bool test2 = menager.CheckEndGame(clientID);
-
-                    if (test2)
+                    if (endGame == 1)
                     {
                         sendMessage = menager.ProccesClient("Option:4$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);
