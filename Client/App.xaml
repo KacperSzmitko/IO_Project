@@ -36,9 +36,9 @@
         <DataTemplate DataType="{x:Type viewmodels:MatchViewModel}">
             <views:MatchView/>
         </DataTemplate>
-
-
-
+        <DataTemplate DataType="{x:Type viewmodels:EndGameViewModel}">
+            <views:EndGameView/>
+        </DataTemplate>
 
         <converters:StringToIntConverter x:Key="stringToIntConverter"/>
         <converters:CellStatusToImgPathConverter x:Key="cellStatusToImgPathConverter"/>

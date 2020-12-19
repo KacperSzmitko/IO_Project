@@ -42,14 +42,14 @@ namespace Client
             }
         }
 
-        public struct GetFoundMatchResponse
+        public struct GetFoundMatchCommandResponse
         {
             public readonly int error;
             public readonly string opponentName;
             public readonly int opponentRank;
             public readonly int isCross;
 
-            public GetFoundMatchResponse(int error, string opponentName, int opponentRank, int isCross) {
+            public GetFoundMatchCommandResponse(int error, string opponentName, int opponentRank, int isCross) {
                 this.error = error;
                 this.opponentName = opponentName;
                 this.opponentRank = opponentRank;
@@ -57,34 +57,48 @@ namespace Client
             }
         }
 
-        public struct SendUserMoveResponse
+        public struct SendUserMoveCommandResponse
         {
             public readonly int error;
             public readonly int userScore;
             public readonly int opponentScore;
 
-            public SendUserMoveResponse(int error, int userScore, int opponentScore) {
+            public SendUserMoveCommandResponse(int error, int userScore, int opponentScore) {
                 this.error = error;
                 this.userScore = userScore;
                 this.opponentScore = opponentScore;
             }
         }
 
-        public struct GetOpponentMoveResponse
+        public struct GetOpponentMoveCommandResponse
         {
             public readonly int error;
             public readonly int userScore;
             public readonly int opponentScore;
             public readonly int opponentMove;
 
-            public GetOpponentMoveResponse(int error, int userScore, int opponentScore, int opponentMove) {
+            public GetOpponentMoveCommandResponse(int error, int userScore, int opponentScore, int opponentMove) {
                 this.error = error;
                 this.userScore = userScore;
                 this.opponentScore = opponentScore;
                 this.opponentMove = opponentMove;
             }
-
         }
+
+        public struct GetEndGameInfoCommandResposne
+        {
+            public readonly int error;
+            public readonly int newUserElo;
+            public readonly int newOpponentElo;
+
+            public GetEndGameInfoCommandResposne(int error, int newUserElo, int newOpponentElo) {
+                this.error = error;
+                this.newUserElo = newUserElo;
+                this.newOpponentElo = newOpponentElo;
+            }
+        }
+
+        
 
         //******************** TOOLS FOR CREATING COMMANDS ********************
 
@@ -218,26 +232,33 @@ namespace Client
             return Int32.Parse(args[0]);
         }
 
-        public static GetFoundMatchResponse GetFoundMatchCommand_responseOnly(ref ServerConnection connection) {
+        public static GetFoundMatchCommandResponse GetFoundMatchCommand_responseOnly(ref ServerConnection connection) {
             string[] args = GetArgArrayFromResponse(connection.ReadMessage());
-            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetFoundMatchResponse(Int32.Parse(args[0]), "", 0, 0);
-            return new GetFoundMatchResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]), Int32.Parse(args[3]));
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetFoundMatchCommandResponse(Int32.Parse(args[0]), "", 0, 0);
+            return new GetFoundMatchCommandResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]), Int32.Parse(args[3]));
         }
 
-        public static SendUserMoveResponse SendUserMoveCommand(ref ServerConnection connection, string sessionID, int move) {
+        public static SendUserMoveCommandResponse SendUserMoveCommand(ref ServerConnection connection, string sessionID, int move) {
             string command = CreateClientMessage((int)Options.SEND_MOVE, sessionID, move.ToString());
             connection.SendMessage(command);
             string[] args = GetArgArrayFromResponse(connection.ReadMessage());
-            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new SendUserMoveResponse(Int32.Parse(args[0]), 0, 0);
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new SendUserMoveCommandResponse(Int32.Parse(args[0]), 0, 0);
             string[] score = args[1].Split("-", StringSplitOptions.RemoveEmptyEntries);
-            return new SendUserMoveResponse(Int32.Parse(args[0]), Int32.Parse(score[0]), Int32.Parse(score[1]));
+            return new SendUserMoveCommandResponse(Int32.Parse(args[0]), Int32.Parse(score[0]), Int32.Parse(score[1]));
         }
 
-        public static GetOpponentMoveResponse GetOpponentMoveCommand_responseOnly(ref ServerConnection connection) {
+        public static GetOpponentMoveCommandResponse GetOpponentMoveCommand_responseOnly(ref ServerConnection connection) {
             string[] args = GetArgArrayFromResponse(connection.ReadMessage());
-            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetOpponentMoveResponse(Int32.Parse(args[0]), 0, 0, 0);
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetOpponentMoveCommandResponse(Int32.Parse(args[0]), 0, 0, 0);
             string[] score = args[1].Split("-", StringSplitOptions.RemoveEmptyEntries);
-            return new GetOpponentMoveResponse(Int32.Parse(args[0]), Int32.Parse(score[0]), Int32.Parse(score[1]), Int32.Parse(args[2]));
+            return new GetOpponentMoveCommandResponse(Int32.Parse(args[0]), Int32.Parse(score[0]), Int32.Parse(score[1]), Int32.Parse(args[2]));
         }
+
+        public static GetEndGameInfoCommandResposne GetEndGameInfoCommand_responseOnly(ref ServerConnection connection) {
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetEndGameInfoCommandResposne(Int32.Parse(args[0]), 0, 0);
+            return new GetEndGameInfoCommandResposne(Int32.Parse(args[0]), Int32.Parse(args[1]), Int32.Parse(args[2]));
+        }
+
     }
 }

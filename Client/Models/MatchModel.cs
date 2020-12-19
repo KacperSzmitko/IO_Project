@@ -14,6 +14,7 @@ namespace Client.Models
         private int old_userScore, old_opponentScore;
         private int userScore, opponentScore;
         private int movesCounter, roundCounter;
+        private readonly int scoreToWin;
 
         public Opponent Opponent {
             get { return opponent; }
@@ -36,6 +37,10 @@ namespace Client.Models
             get { return opponentScore; }
         }
 
+        public int ScoreToWin {
+            get { return scoreToWin; }
+        }
+
         public MatchModel(ServerConnection connection, User user, Opponent opponent) : base(connection, user) {
             this.opponent = opponent;
             this.userStartsRound = !opponent.StartsMatch; //"x" always starts
@@ -46,12 +51,13 @@ namespace Client.Models
             this.old_opponentScore = 0;
             this.roundCounter = 0;
             this.movesCounter = 0;
+            this.scoreToWin = 5;
             this.cellsStatus = new CellStatus[9];
             EmptyCells();
         }
 
         public MoveResult SendUserMove(int move) {
-            ServerCommands.SendUserMoveResponse response = ServerCommands.SendUserMoveCommand(ref connection, user.SessionID, move);
+            ServerCommands.SendUserMoveCommandResponse response = ServerCommands.SendUserMoveCommand(ref connection, user.SessionID, move);
             if (response.error == (int)ErrorCodes.NO_ERROR) {
                 userTurn = false;
                 userScore = response.userScore;
@@ -87,7 +93,7 @@ namespace Client.Models
         }
 
         public MoveResult GetOpponentMove() {
-            ServerCommands.GetOpponentMoveResponse response = ServerCommands.GetOpponentMoveCommand_responseOnly(ref connection);
+            ServerCommands.GetOpponentMoveCommandResponse response = ServerCommands.GetOpponentMoveCommand_responseOnly(ref connection);
             if (response.error == (int)ErrorCodes.NO_ERROR) {
                 userTurn = true;
                 userScore = response.userScore;
@@ -124,6 +130,19 @@ namespace Client.Models
 
         public void EmptyCells() {
             cellsStatus = new CellStatus[9] { CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY };
+        }
+
+        public EndGameInfo GetEndGameInfo() {
+            ServerCommands.GetEndGameInfoCommandResposne response = ServerCommands.GetEndGameInfoCommand_responseOnly(ref connection);
+            if (response.error == (int)ErrorCodes.NO_ERROR) {
+                bool userWon;
+                int userEloDiffrence = response.newUserElo - user.Elo;
+                int oppnentEloDiffrence = response.newOpponentElo - opponent.Elo;
+                if (userEloDiffrence > 0) userWon = true;
+                else userWon = false;
+                return new EndGameInfo(userWon, user.Elo, response.newUserElo, userEloDiffrence, opponent.Elo, response.newOpponentElo, oppnentEloDiffrence);
+            }
+            else throw new Exception(GetErrorCodeName(response.error));
         }
     }
 }

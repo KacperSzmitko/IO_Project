@@ -114,12 +114,21 @@ namespace Client.ViewModels
 
         private void PauseBetweenRoundsAsync() {
             pauseBetweenRounds = true;
-            Thread.Sleep(3000);
-            model.EmptyCells();
-            moveResult = MoveResult.ROUND_NOT_OVER;
-            pauseBetweenRounds = false;
-            OnPropertyChanged(nameof(CellsStatus));
-            OnPropertyChanged(nameof(UserTurnInfo));
+
+            //If game ended, get endGameInfo from server and go to EndGameViewModel
+            if (model.UserScore == model.ScoreToWin || model.OpponentScore == model.ScoreToWin) { 
+                EndGameInfo endGameInfo = model.GetEndGameInfo();
+                Thread.Sleep(2500);
+                navigator.CurrentViewModel = new EndGameViewModel(connection, navigator, model.User, model.Opponent, endGameInfo);
+            }
+            else {
+                Thread.Sleep(2500);
+                model.EmptyCells();
+                moveResult = MoveResult.ROUND_NOT_OVER;
+                pauseBetweenRounds = false;
+                OnPropertyChanged(nameof(CellsStatus));
+                OnPropertyChanged(nameof(UserTurnInfo));
+            }
         }
     }
 }

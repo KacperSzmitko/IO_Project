@@ -92,7 +92,7 @@
                 </DataGrid>
             </Grid>
 
-                    <TextBlock Margin="0 235 0 0" TextAlignment="Center" FontSize="20" Text="Nie rozegrałeś jeszcze żadnych meczów" Visibility="{Binding NoMatchHistoryInfoVisibility}" d:Visibility="Collapsed"/>
+            <TextBlock Margin="0 235 0 0" TextAlignment="Center" FontSize="20" Text="Nie rozegrałeś jeszcze żadnych meczów" Visibility="{Binding NoMatchHistoryInfoVisibility}" d:Visibility="Collapsed"/>
             <Button  Margin="120 25 120 0" Padding="2 2 2 4" FontSize="16" FontWeight="Bold" Content="Powrót" Command="{Binding GoHomeCommand}"/>
         </StackPanel>
     </Border>
