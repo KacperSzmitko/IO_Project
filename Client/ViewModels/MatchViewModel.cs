@@ -16,13 +16,17 @@ namespace Client.ViewModels
 
         private Thread sendUserMoveThread, getOpponentMoveThread;
 
+        private MoveResult moveResult;
+
         public CellStatus[] CellsStatus {
             get { return model.CellsStatus; }
         }
 
         public string UserTurnInfo {
             get {
-                if (model.UserTurn) return "Twój ruch";
+                if (moveResult == MoveResult.USER_WON) return "Wygrałeś rundę";
+                else if (moveResult == MoveResult.USER_LOST) return "Przegrałeś rundę";
+                else if (model.UserTurn) return "Twój ruch";
                 else return "Ruch przeciwnika";
             }                
         }
@@ -74,16 +78,16 @@ namespace Client.ViewModels
         }
 
         private void SendUserMoveAsync(int ci) {
-            if (model.SendUserMove(ci)) {
-                UpdateProperties();
-                getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
-            }
+            moveResult = model.SendUserMove(ci);
+            UpdateProperties();
+            if (moveResult == MoveResult.USER_WON || moveResult == MoveResult.USER_LOST) model.EmptyCells();
+            getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
         }
 
         private void GetOpponentMoveAsync() {
-            if (model.GetOpponentMove()) {
-                UpdateProperties();
-            }
+            moveResult = model.GetOpponentMove();
+            UpdateProperties();
+            if (moveResult == MoveResult.USER_WON || moveResult == MoveResult.USER_LOST) model.EmptyCells();
         }
 
         private void UpdateProperties() {

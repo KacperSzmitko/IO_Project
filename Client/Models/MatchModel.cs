@@ -11,7 +11,9 @@ namespace Client.Models
 
         private CellStatus[] cellsStatus;
         private bool userTurn, userStartsRound;
+        private int old_userScore, old_opponentScore;
         private int userScore, opponentScore;
+        private int roundCounter;
 
         public Opponent Opponent {
             get { return opponent; }
@@ -39,10 +41,14 @@ namespace Client.Models
             this.userTurn = !opponent.StartsMatch;
             this.userScore = 0;
             this.opponentScore = 0;
-            this.cellsStatus = EmptyCells();
+            this.old_userScore = 0;
+            this.old_opponentScore = 0;
+            this.roundCounter = 0;
+            this.cellsStatus = new CellStatus[9];
+            EmptyCells();
         }
 
-        public bool SendUserMove(int move) {
+        public MoveResult SendUserMove(int move) {
             ServerCommands.SendUserMoveResponse response = ServerCommands.SendUserMoveCommand(ref connection, user.SessionID, move);
             if (response.error == (int)ErrorCodes.NO_ERROR) {
                 userTurn = false;
@@ -50,12 +56,21 @@ namespace Client.Models
                 opponentScore = response.opponentScore;
                 if (userStartsRound) CellsStatus[move] = CellStatus.USER_O;
                 else CellsStatus[move] = CellStatus.USER_X;
-                return true;
+
+                if (userScore > old_userScore) {
+                    roundCounter++;
+                    return MoveResult.USER_WON;
+                }
+                else if (opponentScore > old_opponentScore) {
+                    roundCounter++;
+                    return MoveResult.USER_LOST;
+                }
+                else return MoveResult.ROUND_NOT_OVER;
             }
             else throw new Exception(GetErrorCodeName(response.error));
         }
 
-        public bool GetOpponentMove() {
+        public MoveResult GetOpponentMove() {
             ServerCommands.GetOpponentMoveResponse response = ServerCommands.GetOpponentMoveCommand_responseOnly(ref connection);
             if (response.error == (int)ErrorCodes.NO_ERROR) {
                 userTurn = true;
@@ -63,13 +78,22 @@ namespace Client.Models
                 opponentScore = response.opponentScore;
                 if (userStartsRound) CellsStatus[response.opponentMove] = CellStatus.OPPONENT_X;
                 else CellsStatus[response.opponentMove] = CellStatus.OPPONENT_O;
-                return true;
+
+                if (userScore > old_userScore) {
+                    roundCounter++;
+                    return MoveResult.USER_WON;
+                }
+                else if (opponentScore > old_opponentScore) {
+                    roundCounter++;
+                    return MoveResult.USER_LOST;
+                }
+                else return MoveResult.ROUND_NOT_OVER;
             }
             else throw new Exception(GetErrorCodeName(response.error));
         }
 
-        private CellStatus[] EmptyCells() {
-            return new CellStatus[9] { CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY };
+        public void EmptyCells() {
+            cellsStatus = new CellStatus[9] { CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY, CellStatus.EMPTY };
         }
     }
 }
