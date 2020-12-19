@@ -14,9 +14,11 @@ namespace Client.ViewModels
 
         private RelayCommand setCellCommand;
 
-        private Thread sendUserMoveThread, getOpponentMoveThread;
+        private Thread sendUserMoveThread, getOpponentMoveThread, pauseBetweenRoundsThread;
 
         private MoveResult moveResult;
+
+        private bool pauseBetweenRounds;
 
         public CellStatus[] CellsStatus {
             get { return model.CellsStatus; }
@@ -26,6 +28,7 @@ namespace Client.ViewModels
             get {
                 if (moveResult == MoveResult.USER_WON) return "Wygrałeś rundę";
                 else if (moveResult == MoveResult.USER_LOST) return "Przegrałeś rundę";
+                else if (moveResult == MoveResult.DRAW) return "Remis";
                 else if (model.UserTurn) return "Twój ruch";
                 else return "Ruch przeciwnika";
             }                
@@ -66,7 +69,7 @@ namespace Client.ViewModels
                         sendUserMoveThread.Start();
                     }, cellIndex => {
                         int ci = Int32.Parse((string)cellIndex);
-                        if (model.CellsStatus[ci] == CellStatus.EMPTY && model.UserTurn) return true;
+                        if (model.CellsStatus[ci] == CellStatus.EMPTY && model.UserTurn && !pauseBetweenRounds) return true;
                         else return false;
                     });
                 }
@@ -76,6 +79,7 @@ namespace Client.ViewModels
 
         public MatchViewModel(ServerConnection connection, Navigator navigator, User user, Opponent opponent) : base(connection, navigator) {
             this.model = new MatchModel(connection, user, opponent);
+            this.pauseBetweenRounds = false;
             if (opponent.StartsMatch) {
                 getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
                 getOpponentMoveThread.Start();
@@ -84,23 +88,38 @@ namespace Client.ViewModels
 
         private void SendUserMoveAsync(int ci) {
             moveResult = model.SendUserMove(ci);
-            UpdateProperties();
-            if (moveResult == MoveResult.USER_WON || moveResult == MoveResult.USER_LOST) model.EmptyCells();
+            OnPropertyChanged(nameof(CellsStatus));
+            OnPropertyChanged(nameof(UserScore));
+            OnPropertyChanged(nameof(OpponentScore));
+            OnPropertyChanged(nameof(UserTurnInfo));
+            if (moveResult == MoveResult.USER_WON || moveResult == MoveResult.USER_LOST || moveResult == MoveResult.DRAW) {
+                pauseBetweenRoundsThread = new Thread(PauseBetweenRoundsAsync);
+                pauseBetweenRoundsThread.Start();
+            }
             getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
             getOpponentMoveThread.Start();
         }
 
         private void GetOpponentMoveAsync() {
             moveResult = model.GetOpponentMove();
-            UpdateProperties();
-            if (moveResult == MoveResult.USER_WON || moveResult == MoveResult.USER_LOST) model.EmptyCells();
-        }
-
-        private void UpdateProperties() {
             OnPropertyChanged(nameof(CellsStatus));
-            OnPropertyChanged(nameof(UserTurnInfo));
             OnPropertyChanged(nameof(UserScore));
             OnPropertyChanged(nameof(OpponentScore));
+            OnPropertyChanged(nameof(UserTurnInfo));
+            if (moveResult == MoveResult.USER_WON || moveResult == MoveResult.USER_LOST || moveResult == MoveResult.DRAW) {
+                pauseBetweenRoundsThread = new Thread(PauseBetweenRoundsAsync);
+                pauseBetweenRoundsThread.Start();
+            }
+        }
+
+        private void PauseBetweenRoundsAsync() {
+            pauseBetweenRounds = true;
+            Thread.Sleep(3000);
+            model.EmptyCells();
+            moveResult = MoveResult.ROUND_NOT_OVER;
+            pauseBetweenRounds = false;
+            OnPropertyChanged(nameof(CellsStatus));
+            OnPropertyChanged(nameof(UserTurnInfo));
         }
     }
 }

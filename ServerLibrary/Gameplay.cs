@@ -46,22 +46,29 @@ namespace ServerLibrary
 				{
 					p2Positions.Add(pos);
 				}
-				if (p1Positions.Contains(1) && p1Positions.Contains(2) && p1Positions.Contains(3)) {
+				if (p1Positions.Contains(0) && p1Positions.Contains(1) && p1Positions.Contains(2)) {
                     p1Points++; roundEnd = true;
 					p1Positions.Clear();
 					p2Positions.Clear();
 					return true; }
-				if (p1Positions.Contains(4) && p1Positions.Contains(5) && p1Positions.Contains(6))
+				if (p1Positions.Contains(3) && p1Positions.Contains(4) && p1Positions.Contains(5))
 				{
 					p1Points++; roundEnd = true;
 					p1Positions.Clear();
 					p2Positions.Clear();
 					return true;
 				}
-				if (p1Positions.Contains(7) && p1Positions.Contains(8) && p1Positions.Contains(9))
+				if (p1Positions.Contains(6) && p1Positions.Contains(7) && p1Positions.Contains(8))
 				{
 					p1Points++; roundEnd = true;
 					p1Positions.Clear();																																																																																																	
+					p2Positions.Clear();
+					return true;
+				}
+				if (p1Positions.Contains(0) && p1Positions.Contains(3) && p1Positions.Contains(6))
+				{
+					p1Points++; roundEnd = true;
+					p1Positions.Clear();
 					p2Positions.Clear();
 					return true;
 				}
@@ -79,21 +86,14 @@ namespace ServerLibrary
 					p2Positions.Clear();
 					return true;
 				}
-				if (p1Positions.Contains(3) && p1Positions.Contains(6) && p1Positions.Contains(9))
+				if (p1Positions.Contains(0) && p1Positions.Contains(4) && p1Positions.Contains(8))
 				{
 					p1Points++; roundEnd = true;
 					p1Positions.Clear();
 					p2Positions.Clear();
 					return true;
 				}
-				if (p1Positions.Contains(1) && p1Positions.Contains(5) && p1Positions.Contains(9))
-				{
-					p1Points++; roundEnd = true;
-					p1Positions.Clear();
-					p2Positions.Clear();
-					return true;
-				}
-				if (p1Positions.Contains(7) && p1Positions.Contains(5) && p1Positions.Contains(3))
+				if (p1Positions.Contains(6) && p1Positions.Contains(4) && p1Positions.Contains(2))
 				{
 					p1Points++; roundEnd = true;
 					p1Positions.Clear();
@@ -103,21 +103,28 @@ namespace ServerLibrary
 
 
 
-				if (p2Positions.Contains(1) && p2Positions.Contains(2) && p2Positions.Contains(3))
+				if (p2Positions.Contains(0) && p2Positions.Contains(1) && p2Positions.Contains(2))
 				{
 					p2Points++; roundEnd = true;
 					p1Positions.Clear();
 					p2Positions.Clear();
 					return true;
 				}
-				if (p2Positions.Contains(4) && p2Positions.Contains(5) && p2Positions.Contains(6))
+				if (p2Positions.Contains(3) && p2Positions.Contains(4) && p2Positions.Contains(5))
 				{
 					p2Points++; roundEnd = true;
 					p1Positions.Clear();
 					p2Positions.Clear();
 					return true;
 				}
-				if (p2Positions.Contains(7) && p2Positions.Contains(8) && p2Positions.Contains(9))
+				if (p2Positions.Contains(6) && p2Positions.Contains(7) && p2Positions.Contains(8))
+				{
+					p2Points++; roundEnd = true;
+					p1Positions.Clear();
+					p2Positions.Clear();
+					return true;
+				}
+				if (p2Positions.Contains(0) && p2Positions.Contains(3) && p2Positions.Contains(6))
 				{
 					p2Points++; roundEnd = true;
 					p1Positions.Clear();
@@ -138,21 +145,14 @@ namespace ServerLibrary
 					p2Positions.Clear();
 					return true;
 				}
-				if (p2Positions.Contains(3) && p2Positions.Contains(6) && p2Positions.Contains(9))
+				if (p2Positions.Contains(0) && p2Positions.Contains(4) && p2Positions.Contains(8))
 				{
 					p2Points++; roundEnd = true;
 					p1Positions.Clear();
 					p2Positions.Clear();
 					return true;
 				}
-				if (p2Positions.Contains(1) && p2Positions.Contains(5) && p2Positions.Contains(9))
-				{
-					p2Points++; roundEnd = true;
-					p1Positions.Clear();
-					p2Positions.Clear();
-					return true;
-				}
-				if (p2Positions.Contains(7) && p2Positions.Contains(5) && p2Positions.Contains(3))
+				if (p2Positions.Contains(6) && p2Positions.Contains(4) && p2Positions.Contains(2))
 				{
 					p2Points++; roundEnd = true;
 					p1Positions.Clear();
