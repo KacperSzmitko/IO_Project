@@ -13,7 +13,7 @@ namespace Client.Models
         private bool userTurn, userStartsRound;
         private int old_userScore, old_opponentScore;
         private int userScore, opponentScore;
-        private int roundCounter;
+        private int movesCounter, roundCounter;
 
         public Opponent Opponent {
             get { return opponent; }
@@ -45,6 +45,7 @@ namespace Client.Models
             this.old_userScore = 0;
             this.old_opponentScore = 0;
             this.roundCounter = 0;
+            this.movesCounter = 0;
             this.cellsStatus = new CellStatus[9];
             EmptyCells();
         }
@@ -55,18 +56,30 @@ namespace Client.Models
                 userTurn = false;
                 userScore = response.userScore;
                 opponentScore = response.opponentScore;
+                movesCounter++;
+
                 if (userStartsRound) CellsStatus[move] = CellStatus.USER_X;
                 else CellsStatus[move] = CellStatus.USER_O;
 
                 if (userScore > old_userScore) {
+                    movesCounter = 0;
                     old_userScore = userScore;
                     roundCounter++;
+                    userStartsRound = !userStartsRound;
                     return MoveResult.USER_WON;
                 }
                 else if (opponentScore > old_opponentScore) {
+                    movesCounter = 0;
                     old_opponentScore = opponentScore;
                     roundCounter++;
+                    userStartsRound = !userStartsRound;
                     return MoveResult.USER_LOST;
+                }
+                else if (movesCounter == 9) {
+                    movesCounter = 0;
+                    roundCounter++;
+                    userStartsRound = !userStartsRound;
+                    return MoveResult.DRAW;
                 }
                 else return MoveResult.ROUND_NOT_OVER;
             }
@@ -79,18 +92,30 @@ namespace Client.Models
                 userTurn = true;
                 userScore = response.userScore;
                 opponentScore = response.opponentScore;
+                movesCounter++;
+
                 if (userStartsRound) CellsStatus[response.opponentMove] = CellStatus.OPPONENT_O;
                 else CellsStatus[response.opponentMove] = CellStatus.OPPONENT_X;
 
                 if (userScore > old_userScore) {
+                    movesCounter = 0;
                     old_userScore = userScore;
                     roundCounter++;
+                    userStartsRound = !userStartsRound;
                     return MoveResult.USER_WON;
                 }
                 else if (opponentScore > old_opponentScore) {
+                    movesCounter = 0;
                     old_opponentScore = opponentScore;
                     roundCounter++;
+                    userStartsRound = !userStartsRound;
                     return MoveResult.USER_LOST;
+                }
+                else if (movesCounter == 9) {
+                    movesCounter = 0;
+                    roundCounter++;
+                    userStartsRound = !userStartsRound;
+                    return MoveResult.DRAW;
                 }
                 else return MoveResult.ROUND_NOT_OVER;
             }

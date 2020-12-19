@@ -17,6 +17,7 @@ namespace Client
     {
         ROUND_NOT_OVER,
         USER_WON,
-        USER_LOST
+        USER_LOST,
+        DRAW
     }
 }

@@ -88,15 +88,15 @@
             <TextBlock HorizontalAlignment="Center" Margin="0 20 0 0" FontSize="30" Text="{Binding UserTurnInfo}" d:Text="Twój ruch"/>
             <TextBlock HorizontalAlignment="Center" Margin="0 20 0 0" FontSize="22" Text="Wynik"/>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Width="150" TextAlignment="Left" FontSize="22" Text="{Binding UserName}" d:Text="test"/>
-                <TextBlock Width="40"  TextAlignment="Left" FontSize="22" Text="{Binding UserScore}" d:Text="0"/>
+                <TextBlock Width="150" TextAlignment="Left" FontSize="22" Foreground="#0000aa" Text="{Binding UserName}" d:Text="test"/>
+                <TextBlock Width="40"  TextAlignment="Left" FontSize="22" Foreground="#0000aa" Text="{Binding UserScore}" d:Text="0"/>
                 <TextBlock Width="10"  TextAlignment="Center" FontSize="22" Text=":"/>
-                <TextBlock Width="40"  TextAlignment="Right" FontSize="22" Text="{Binding OpponentScore}" d:Text="0"/>
-                <TextBlock Width="150" TextAlignment="Right" FontSize="22" Text="{Binding OpponentName}" d:Text="test2"/>
+                <TextBlock Width="40"  TextAlignment="Right" FontSize="22" Foreground="#aa0000" Text="{Binding OpponentScore}" d:Text="0"/>
+                <TextBlock Width="150" TextAlignment="Right" FontSize="22" Foreground="#aa0000" Text="{Binding OpponentName}" d:Text="test2"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Width="195" TextAlignment="Left" FontSize="16" Text="{Binding UserElo}" d:Text="1000"/>
-                <TextBlock Width="195" TextAlignment="Right" FontSize="16" Text="{Binding OpponentElo}" d:Text="1000"/>
+                <TextBlock Width="195" TextAlignment="Left" FontSize="16" Foreground="#0000aa" Text="{Binding UserElo}" d:Text="1000"/>
+                <TextBlock Width="195" TextAlignment="Right" FontSize="16" Foreground="#aa0000" Text="{Binding OpponentElo}" d:Text="1000"/>
             </StackPanel>
 
         </StackPanel>
