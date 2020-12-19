@@ -193,43 +193,7 @@ namespace ServerLibrary
             else return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.CREATE_USER);
         }
 
-        private string SendMove(string msg, int clientID)
-        {
-            
-            int matchID;
-            lock (players)
-            {
-                if(players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.SEND_MOVE);
-                if(players[clientID].matchID < 0) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_IN_GAME, (int)Options.SEND_MOVE);
-                matchID = players[clientID].matchID;
-            }
-            string[] fields = msg.Split("$$", StringSplitOptions.RemoveEmptyEntries);
-            string f = fields[1].Split(":", StringSplitOptions.RemoveEmptyEntries)[1];
-            int move = Int32.Parse(f);
-
-            
-            lock(games[matchID])
-            {
-                lock (players)
-                {
-                    bool check_move = games[matchID].move(move, players[clientID]);
-
-                    //Correct move
-                    if (check_move)
-                    {
-                        games[matchID].p1.playerTurn = !games[matchID].p1.playerTurn;
-                        games[matchID].p2.playerTurn = !games[matchID].p2.playerTurn;
-                        games[matchID].lastMove = move;
-                        if (players[clientID].name == games[matchID].p1.name)
-                        return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEND_MOVE, String.Format("{0}-{1}",
-                            games[matchID].p1Points, games[matchID].p2Points));
-                        else return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEND_MOVE, String.Format("{1}-{0}",
-                            games[matchID].p1Points, games[matchID].p2Points));
-                    }
-                    return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.MOVE_NOT_ALLOWED, (int)Options.SEND_MOVE, "Niedozwolony ruch");
-                }
-            }
-        }
+       
 
         public string Disconnect(string msg,int clientID)
         {      
@@ -327,9 +291,9 @@ namespace ServerLibrary
             {
                 if(p1.name == playerName)
                 {
-                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p2.name, p2.elo.ToString(), p1.elo.ToString(),"1"));
+                    return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p2.name, p2.elo.ToString(), "1"));
                 }
-                return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p1.name, p1.elo.ToString(), p2.elo.ToString(),"0"));
+                return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME, p1.name, p1.elo.ToString(), "0"));
             }
         }
 
@@ -350,6 +314,47 @@ namespace ServerLibrary
                 }
             }
         }
+
+     
+        private string SendMove(string msg, int clientID)
+        {
+
+            int matchID;
+            lock (players)
+            {
+                if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.SEND_MOVE);
+                if (players[clientID].matchID < 0) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_IN_GAME, (int)Options.SEND_MOVE);
+                matchID = players[clientID].matchID;
+            }
+            string[] fields = msg.Split("$$", StringSplitOptions.RemoveEmptyEntries);
+            string f = fields[1].Split(":", StringSplitOptions.RemoveEmptyEntries)[1];
+            int move = Int32.Parse(f);
+
+
+            lock (games[matchID])
+            {
+                lock (players)
+                {
+                    bool check_move = games[matchID].move(move, players[clientID]);
+
+                    //Correct move
+                    if (check_move)
+                    {
+                        if (games[matchID].roundEnd) games[matchID].roundEnd = false;
+                        games[matchID].p1.playerTurn = !games[matchID].p1.playerTurn;
+                        games[matchID].p2.playerTurn = !games[matchID].p2.playerTurn;
+                        games[matchID].lastMove = move;
+                        if (players[clientID].name == games[matchID].p1.name)
+                            return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEND_MOVE, String.Format("{0}-{1}",
+                                games[matchID].p1Points, games[matchID].p2Points));
+                        else return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEND_MOVE, String.Format("{1}-{0}",
+                            games[matchID].p1Points, games[matchID].p2Points));
+                    }
+                    return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.MOVE_NOT_ALLOWED, (int)Options.SEND_MOVE, "Niedozwolony ruch");
+                }
+            }
+        }
+
 
         //Returns true if game has been founded for client
         public bool CheckMatchAcctualization(int clientID)
@@ -372,9 +377,6 @@ namespace ServerLibrary
             }
         }
 
-
-
-
         public int AddPlayer(Player player)
         {
             players.Add(player);
@@ -385,8 +387,11 @@ namespace ServerLibrary
         {
             lock(players)
             {
-                if (players[clientID].playerTurn) return true;
-                return false;
+                lock (games)
+                {
+                    if (players[clientID].playerTurn && !games[players[clientID].matchID].roundEnd) return true;
+                    return false;
+                }
             }
         }
 

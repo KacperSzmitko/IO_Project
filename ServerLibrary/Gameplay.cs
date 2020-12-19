@@ -24,7 +24,7 @@ namespace ServerLibrary
         {
             this.p1 = p1;
             this.p2 = p2;
-			this.roundEnd = false;
+			this.roundEnd = true;
             this.pointsToWin = pointsToWin;
             p1Points = 0;
             p2Points = 0;
