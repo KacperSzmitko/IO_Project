@@ -301,8 +301,6 @@ namespace ServerLibrary
         {
             lock(games)
             {
-                lock(players)
-                {
                     string name = players[clientID].name;
                     int p1Points = games[players[clientID].matchID].p1Points;
                     int p2Points = games[players[clientID].matchID].p2Points;
@@ -311,7 +309,6 @@ namespace ServerLibrary
                             String.Format("{0}-{1}",p1Points,p2Points),games[players[clientID].matchID].lastMove.ToString()));
                     return (TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.OPP_MOVE,
                             String.Format("{1}-{0}", p1Points, p2Points), games[players[clientID].matchID].lastMove.ToString()));
-                }
             }
         }
 
@@ -343,8 +340,18 @@ namespace ServerLibrary
                         if (games[matchID].roundEnd) {
                             games[matchID].roundEnd = false;
                         }
-                        games[matchID].p1.playerTurn = !games[matchID].p1.playerTurn;
-                        games[matchID].p2.playerTurn = !games[matchID].p2.playerTurn;
+
+                        if (players[clientID].name == games[matchID].p1.name)
+                        {
+                            games[matchID].p1.playerTurn = false;
+                            games[matchID].p2.playerTurn = true;
+                        }
+                        else
+                        {
+                            games[matchID].p1.playerTurn = true;
+                            games[matchID].p2.playerTurn = false;
+                        }
+
                         games[matchID].lastMove = move;
                         if (players[clientID].name == games[matchID].p1.name)
                             return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEND_MOVE, String.Format("{0}-{1}",
@@ -392,6 +399,7 @@ namespace ServerLibrary
                 lock (games)
                 {
                     if (players[clientID].playerTurn && !games[players[clientID].matchID].roundEnd) {
+                        players[clientID].playerTurn = false;
                         return true;
                     }
                     return false;
