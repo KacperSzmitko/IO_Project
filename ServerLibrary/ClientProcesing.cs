@@ -240,7 +240,7 @@ namespace ServerLibrary
                                     this.players[playersWaiting[i]].matchID = matchID;
                                     this.players[playersWaiting[i]].matchActualization = true;
                                 }
-                                lock (games) games.Add(new Gameplay(this.players[waitingPlayer], this.players[playersWaiting[i]], 9, 1));
+                                lock (games) games.Add(new Gameplay(this.players[waitingPlayer], this.players[playersWaiting[i]], 9, Variables.scoreToWin));
 
 
                                 lock (this.playersWaitingForGame)

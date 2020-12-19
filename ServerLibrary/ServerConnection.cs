@@ -100,14 +100,9 @@ namespace ServerLibrary
                         stream.Write(message);
                     }
 
-                    if(menager.CheckEndGame(clientID))
-                    {
-                        sendMessage = menager.ProccesClient("Option:12$$", clientID);
-                        message = Encoding.ASCII.GetBytes(sendMessage);
-                        stream.Write(message);
-                    }
+                    bool test2 = menager.CheckEndGame(clientID);
 
-                    if(menager.CheckEndGame(clientID))
+                    if (test2)
                     {
                         sendMessage = menager.ProccesClient("Option:4$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);

@@ -51,7 +51,7 @@ namespace Client.Models
             this.old_opponentScore = 0;
             this.roundCounter = 0;
             this.movesCounter = 0;
-            this.scoreToWin = 5;
+            this.scoreToWin = Variables.scoreToWin;
             this.cellsStatus = new CellStatus[9];
             EmptyCells();
         }

@@ -30,7 +30,8 @@ namespace Client
                 Decoder decoder = Encoding.ASCII.GetDecoder();
                 char[] chars = new char[decoder.GetCharCount(buffer, 0, messageLen)];
                 decoder.GetChars(buffer, 0, messageLen, chars, 0);
-                return new string(chars);
+                string messageString = new string(chars);
+                return messageString;
             }
             else return "";
         }
