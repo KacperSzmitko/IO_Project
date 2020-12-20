@@ -410,6 +410,23 @@ namespace ServerLibrary
             }
         }
 
+
+        private string StopSearching(string msg, int clientID)
+        {
+            lock(playersWaitingForGameLock)
+            {
+                for(int i=0;i<playersWaitingForGame.Count;i++)
+                {
+                    if(playersWaitingForGame[i] == clientID)
+                    {
+                        playersWaitingForGame.RemoveAt(i);
+                        return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.STOP_SEARCHING);
+                    }
+                }
+            }
+            return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.GAME_IN_NOT_SEARCHED, (int)Options.STOP_SEARCHING);
+        }
+
         public string EndGameMessage(string msg, int clientID)
         {
             lock (gamesLock)
@@ -526,6 +543,7 @@ namespace ServerLibrary
             functions.Add(new Functions(CheckUserName));
             functions.Add(new Functions(SendMatch));
             functions.Add(new Functions(SendOppMove));
+            functions.Add(new Functions(StopSearching));
 
             matchMaking = new Thread(MatchMaking);
             security = new pbkdf2();

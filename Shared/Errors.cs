@@ -15,5 +15,6 @@ namespace Shared
         USER_ALREADY_EXISTS = 7,
         NOT_IN_GAME = 8,
         MOVE_NOT_ALLOWED = 9,
+        GAME_IN_NOT_SEARCHED = 10,
     }
 }

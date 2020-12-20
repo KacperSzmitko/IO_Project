@@ -25,7 +25,7 @@ namespace ServerLibrary
                 try
                 {
                     // Options can by only in range of <0,7>
-                    if (option > 11 || option < 0) throw new ArgumentException("Invalid option!");
+                    if (option < 0) throw new ArgumentException("Invalid option!");
                     //GetMatchHisotry and GetRank
                     if (option == 1 || option == 2)
                     {
@@ -61,7 +61,6 @@ namespace ServerLibrary
                         AddField("Score", fields[0], ref result);
                         AddField("OppMove", fields[1], ref result);
                     }
-
 
                 }
                 catch (ArgumentOutOfRangeException)
