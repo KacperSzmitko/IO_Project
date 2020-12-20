@@ -481,12 +481,14 @@ namespace ServerLibrary
             {
                 lock (gamesLock)
                 {
-                    if(players[clientID].won)
+                    if (players[clientID].won)
                     {
+                        players[clientID].won = false;
                         return 1;
                     }
-                    else if(players[clientID].lose)
-                    {
+                    else if (players[clientID].lose)
+                    { 
+                        players[clientID].lose = false;
                         return 2;
                     }
                     return 0;

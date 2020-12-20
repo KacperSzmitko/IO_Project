@@ -121,7 +121,7 @@ namespace ServerLibrary
                         message = Encoding.ASCII.GetBytes(sendMessage);
                         stream.Write(message);
                     }
-                    Thread.Sleep(300);
+                    Thread.Sleep(100);
 
                 }
                 catch
