@@ -64,6 +64,7 @@ namespace ServerLibrary
                     {
                         message = Encoding.ASCII.GetBytes("Response:0$$");
                         stream.Write(message);
+                        Thread.Sleep(2000);
                         break;
                     }
                     message = Encoding.ASCII.GetBytes(sendMessage);

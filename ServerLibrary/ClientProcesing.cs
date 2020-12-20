@@ -161,9 +161,12 @@ namespace ServerLibrary
                 {
                     foreach (Player p in players)
                     {
-                        if (p.name == username && p.sessionId != null)
+                        if (p != null)
                         {
-                            return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_LOGGED_IN, (int)Options.LOGIN);
+                            if (p.name == username && p.sessionId != null)
+                            {
+                                return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_ALREADY_LOGGED_IN, (int)Options.LOGIN);
+                            }
                         }
                     }
 
