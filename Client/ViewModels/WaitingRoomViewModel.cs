@@ -18,7 +18,7 @@ namespace Client.ViewModels
         private RelayCommand goHomeCommand;
 
         private bool successfulSearchStart;
-        private bool gameFoundOrGoHome;
+        private bool gameFound, stopSearching;
 
         private string waitingDots;
 
@@ -38,7 +38,8 @@ namespace Client.ViewModels
             get {
                 if (goHomeCommand == null) {
                     goHomeCommand = new RelayCommand(_ => {
-                        gameFoundOrGoHome = true;
+                        stopSearching = true;
+                        searchGameThread.Join();
                         navigator.CurrentViewModel = new HomeViewModel(connection, navigator, model.User);
                     }, _ => true);
                 }
@@ -49,7 +50,8 @@ namespace Client.ViewModels
         public WaitingRoomViewModel(ServerConnection connection, Navigator navigator, User user) : base(connection, navigator) {
             this.model = new WaitingRoomModel(this.connection, user);
             this.successfulSearchStart = false;
-            this.gameFoundOrGoHome = false;
+            this.gameFound = false;
+            this.stopSearching = false;
             this.waitingDots = ".";
             this.waitingDotsThread = new Thread(UpdateWaitingDotsAsync);
             this.waitingDotsThread.Start();
@@ -58,7 +60,7 @@ namespace Client.ViewModels
         }
 
         private void UpdateWaitingDotsAsync() {
-            while (!gameFoundOrGoHome) {
+            while (!gameFound && !stopSearching) {
                 waitingDots = ".";
                 OnPropertyChanged(nameof(WaitingDots));
                 Thread.Sleep(750);
@@ -74,10 +76,14 @@ namespace Client.ViewModels
         private void SearchGameAsync() {
             successfulSearchStart = model.SearchGame(); 
             if (successfulSearchStart) {
-                Opponent opponent = model.GetFoundMatch();
-                gameFoundOrGoHome = true;
-                if (opponent == null) navigator.CurrentViewModel = new HomeViewModel(connection, navigator, model.User);
-                navigator.CurrentViewModel = new MatchViewModel(connection, navigator, model.User, opponent);
+                while (!model.NetworkStreamDataAvailable && !stopSearching) Thread.Sleep(10);
+                if (model.NetworkStreamDataAvailable) {
+                    Opponent opponent = model.GetFoundMatch();
+                    gameFound = true;
+                    stopSearching = true;
+                    if (opponent == null) navigator.CurrentViewModel = new HomeViewModel(connection, navigator, model.User);
+                    navigator.CurrentViewModel = new MatchViewModel(connection, navigator, model.User, opponent);
+                }
             } 
             else {
                 navigator.CurrentViewModel = new HomeViewModel(connection, navigator, model.User);

@@ -7,6 +7,10 @@ namespace Client.Models
 {
     public class WaitingRoomModel : LoggedModel
     {
+        public bool NetworkStreamDataAvailable {
+            get { return connection.DataAvailable; }
+        }
+
         public WaitingRoomModel(ServerConnection connection, User user) : base(connection, user) { }
 
         public bool SearchGame() {
@@ -20,6 +24,8 @@ namespace Client.Models
             if (response.error != (int)ErrorCodes.NO_ERROR) throw new Exception(GetErrorCodeName(response.error));
             return new Opponent(response.opponentName, response.opponentRank, !Convert.ToBoolean(response.isCross));
         }
+
+
 
 
     }

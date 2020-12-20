@@ -6,10 +6,14 @@ namespace Client
     public class ServerConnection 
     {
 
-        private const int bufferSize = 10000;
+        private const int bufferSize = 1024;
 
         private readonly TcpClient tcpClient;
         private readonly NetworkStream stream;
+
+        public bool DataAvailable {
+            get { return stream.DataAvailable; }
+        }
 
         public ServerConnection(string serverAddress, ushort serverPort) {
             this.tcpClient = new TcpClient(serverAddress, serverPort);
@@ -24,16 +28,17 @@ namespace Client
 
         public string ReadMessage() {
             byte[] buffer = new byte[bufferSize];
-            int messageLen = stream.Read(buffer, 0, bufferSize);
-            if (messageLen > 0)
-            {
-                Decoder decoder = Encoding.ASCII.GetDecoder();
-                char[] chars = new char[decoder.GetCharCount(buffer, 0, messageLen)];
-                decoder.GetChars(buffer, 0, messageLen, chars, 0);
-                string messageString = new string(chars);
-                return messageString;
-            }
-            else return "";
+            Decoder decoder = Encoding.ASCII.GetDecoder();
+            string messageString = "";
+
+            do {
+                int bytesRead = stream.Read(buffer, 0, bufferSize);
+                char[] chars = new char[decoder.GetCharCount(buffer, 0, bytesRead)];
+                decoder.GetChars(buffer, 0, bytesRead, chars, 0);
+                messageString += new string(chars);
+            } while (stream.DataAvailable);
+
+            return messageString;
         }
 
         public void CloseConnection() {
