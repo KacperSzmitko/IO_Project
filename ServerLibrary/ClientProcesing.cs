@@ -105,7 +105,7 @@ namespace ServerLibrary
                 {
                     return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.MATCH_HISTORY);
                 }
-            }
+            
             try { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.MATCH_HISTORY, dbConnection.GetMatchHistoryData(playerName)); }
             catch { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.DB_CONNECTION_ERROR, (int)Options.MATCH_HISTORY); }
         }
@@ -237,7 +237,7 @@ namespace ServerLibrary
                     {
                         if (waitingPlayer != playersWaiting[i])
                         {
-                            if (Math.Abs(players[waitingPlayer].elo - players[playersWaiting[i]].elo) <= 150)
+                            if (Math.Abs(players[waitingPlayer].elo - players[playersWaiting[i]].elo) <= 300)
                             {                                                                      
                                 int matchID = games.Count;
                                 lock (playersLock)

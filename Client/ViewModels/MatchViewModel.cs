@@ -18,7 +18,7 @@ namespace Client.ViewModels
 
         private MoveResult moveResult;
 
-        private bool pauseBetweenRounds;
+        private bool pauseBetweenRounds, matchEnded;
 
         public CellStatus[] CellsStatus {
             get { return model.CellsStatus; }
@@ -80,6 +80,7 @@ namespace Client.ViewModels
         public MatchViewModel(ServerConnection connection, Navigator navigator, User user, Opponent opponent) : base(connection, navigator) {
             this.model = new MatchModel(connection, user, opponent);
             this.pauseBetweenRounds = false;
+            this.matchEnded = false;
             if (opponent.StartsMatch) {
                 getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
                 getOpponentMoveThread.Start();
@@ -96,8 +97,11 @@ namespace Client.ViewModels
                 pauseBetweenRoundsThread = new Thread(PauseBetweenRoundsAsync);
                 pauseBetweenRoundsThread.Start();
             }
-            getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
-            getOpponentMoveThread.Start();
+            if (pauseBetweenRoundsThread != null) pauseBetweenRoundsThread.Join();
+            if (!matchEnded) {
+                getOpponentMoveThread = new Thread(GetOpponentMoveAsync);
+                getOpponentMoveThread.Start();
+            }
         }
 
         private void GetOpponentMoveAsync() {
@@ -116,7 +120,8 @@ namespace Client.ViewModels
             pauseBetweenRounds = true;
 
             //If game ended, get endGameInfo from server and go to EndGameViewModel
-            if (model.UserScore == model.ScoreToWin || model.OpponentScore == model.ScoreToWin) { 
+            if (model.UserScore == model.ScoreToWin || model.OpponentScore == model.ScoreToWin) {
+                matchEnded = true;
                 EndGameInfo endGameInfo = model.GetEndGameInfo();
                 Thread.Sleep(2500);
                 navigator.CurrentViewModel = new EndGameViewModel(connection, navigator, model.User, model.Opponent, endGameInfo);

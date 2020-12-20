@@ -79,10 +79,11 @@ namespace Client.ViewModels
 
             if (ds.Tables.Count == 0) return dt;
 
-            DataRow newRow = dt.NewRow();
-            int i = 1;
+            int i = ds.Tables[0].Rows.Count;
             bool isP1User;
             foreach (DataRow row in ds.Tables[0].Rows) {
+                DataRow newRow = dt.NewRow();
+
                 if ((string)row["p1Name"] == model.User.Username) isP1User = true;
                 else isP1User = false;
                 newRow["numer"] = i;
@@ -98,13 +99,16 @@ namespace Client.ViewModels
                 else newRow["zmiana_elo"] = row["p2EloLoss"];
 
                 dt.Rows.Add(newRow);
+                i--;
             }
             return dt;
         }
 
         private int GetUserWinRatio() {
             if (matchHistoryDataTable.Rows.Count == 0) return 0;
-            return (matchHistoryDataTable.Select("rezultat = 'Zwycięstwo'").Length / matchHistoryDataTable.Rows.Count) * 100;
+            int nWins = matchHistoryDataTable.Select("rezultat = 'Zwycięstwo'").Length;
+            int nAll = matchHistoryDataTable.Rows.Count;
+            return (int)((float)nWins / (float)nAll * 100.0f);
         }
 
     }
