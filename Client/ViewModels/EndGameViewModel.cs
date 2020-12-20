@@ -59,7 +59,7 @@ namespace Client.ViewModels
             get { return endGameInfo.NewOpponentElo; }
         }
 
-        public string OpponentrEloDiffrence {
+        public string OpponentEloDiffrence {
             get {
                 if (endGameInfo.UserWon) return "-" + (endGameInfo.OpponentEloDiffrence * -1).ToString();
                 else return "+" + endGameInfo.OpponentEloDiffrence.ToString();

@@ -56,10 +56,10 @@ namespace ServerLibrary
             var list = new List<string>(fields);
             list.RemoveAt(0);
 
-            lock (functions)
-            {
-                return functions[option](string.Join("$$",list), clientID);
-            }
+            
+            //LOCK WAS HERE
+            return functions[option](string.Join("$$",list), clientID);
+            
         }
 
 
@@ -88,8 +88,8 @@ namespace ServerLibrary
         {
             
             string playerName = "";
-            lock (players)
-            {
+            
+            //LOCK WAS HERE
                 if(players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.MATCH_HISTORY);
                 try
                 {
@@ -99,7 +99,7 @@ namespace ServerLibrary
                 {
                     return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.MATCH_HISTORY);
                 }
-            }
+            
             try { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.MATCH_HISTORY, dbConnection.GetMatchHistoryData(playerName)); }
             catch { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.DB_CONNECTION_ERROR, (int)Options.MATCH_HISTORY); }
         }
@@ -107,8 +107,8 @@ namespace ServerLibrary
 
         private string Rank(string msg, int clientID)
         {
-            
-            lock (players) if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.RANK);
+            //LOCK WAS HERE
+            if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.RANK);
             try { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.RANK, dbConnection.GetRankData()); }
             catch(Exception e) { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.DB_CONNECTION_ERROR, (int)Options.RANK, e.Message); }
         }
@@ -116,16 +116,16 @@ namespace ServerLibrary
 
         private string SearchGame(string msg, int clientID)
         {
-            
-            lock (players) if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.SEARCH_GAME);
-            lock (playersWaitingForGame)
-            {
+            //LOCK WAS HERE
+            if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.SEARCH_GAME);
+            //LOCK WAS HERE
                 if(playersWaitingForGame.Contains(clientID))
                 {
                     return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.GAME_IS_ALREADY_SEARCHED, (int)Options.SEARCH_GAME);
                 }
                 playersWaitingForGame.Add(clientID);
-            }
+            
+
             //lock (players) players[clientID].matchID = -1;
             return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME);
         }
@@ -230,7 +230,7 @@ namespace ServerLibrary
                     {
                         if (waitingPlayer != playersWaiting[i])
                         {
-                            if (Math.Abs(players[waitingPlayer].elo - players[playersWaiting[i]].elo) <= 150)
+                            if (Math.Abs(players[waitingPlayer].elo - players[playersWaiting[i]].elo) <= 300)
                             {                                                                      
                                 int matchID = games.Count;
                                 lock (this.players)
