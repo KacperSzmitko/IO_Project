@@ -40,6 +40,12 @@ namespace ServerLibrary
 
         public DbMethods dbConnection { get; set; }
 
+        private object functionLock = new object();
+        private object playersLock = new object();
+        private object gamesLock = new object();
+        private object playersWaitingForGameLock = new object();
+
+
         private Security security;
 
         /// <summary>
@@ -56,7 +62,7 @@ namespace ServerLibrary
             var list = new List<string>(fields);
             list.RemoveAt(0);
 
-            lock (functions)
+            lock (functionLock)
             {
                 return functions[option](string.Join("$$",list), clientID);
             }
@@ -68,11 +74,11 @@ namespace ServerLibrary
         {
             
             if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.LOGOUT);
-            lock (players)
+            lock (playersLock)
             {
                 if(players[clientID].matchID > 0)
                 {
-                    lock (games)
+                    lock (gamesLock)
                     {
                         //End game and set this client to lose
 
@@ -88,7 +94,7 @@ namespace ServerLibrary
         {
             
             string playerName = "";
-            lock (players)
+            lock (playersLock)
             {
                 if(players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.MATCH_HISTORY);
                 try
@@ -108,7 +114,7 @@ namespace ServerLibrary
         private string Rank(string msg, int clientID)
         {
             
-            lock (players) if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.RANK);
+            lock (playersLock) if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.RANK);
             try { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.RANK, dbConnection.GetRankData()); }
             catch(Exception e) { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.DB_CONNECTION_ERROR, (int)Options.RANK, e.Message); }
         }
@@ -117,8 +123,8 @@ namespace ServerLibrary
         private string SearchGame(string msg, int clientID)
         {
             
-            lock (players) if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.SEARCH_GAME);
-            lock (playersWaitingForGame)
+            lock (playersLock) if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.SEARCH_GAME);
+            lock (playersWaitingForGameLock)
             {
                 if(playersWaitingForGame.Contains(clientID))
                 {
@@ -126,7 +132,7 @@ namespace ServerLibrary
                 }
                 playersWaitingForGame.Add(clientID);
             }
-            //lock (players) players[clientID].matchID = -1;
+            //lock (playersLock) players[clientID].matchID = -1;
             return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.SEARCH_GAME);
         }
 
@@ -149,7 +155,7 @@ namespace ServerLibrary
             if (security.VerifyPassword(passwordHash, password))
             {
                 string elo = "";
-                lock (players)
+                lock (playersLock)
                 {
                     foreach (Player p in players)
                     {
@@ -192,7 +198,7 @@ namespace ServerLibrary
 
         public string Disconnect(string msg,int clientID)
         {      
-            lock (players)
+            lock (playersLock)
             {
                 players[clientID] = null;
                 return "";
@@ -220,8 +226,9 @@ namespace ServerLibrary
                 found = false;
 
                 //Acutalization of using arrays
-                playersWaiting = new List<int>(playersWaitingForGame);
-                players = new List<Player>(this.players);
+                lock(playersWaitingForGameLock) playersWaiting = new List<int>(playersWaitingForGame);
+                lock(playersLock) players = new List<Player>(this.players);
+
 
 
                 foreach (int waitingPlayer in playersWaiting)
@@ -233,17 +240,17 @@ namespace ServerLibrary
                             if (Math.Abs(players[waitingPlayer].elo - players[playersWaiting[i]].elo) <= 150)
                             {                                                                      
                                 int matchID = games.Count;
-                                lock (this.players)
+                                lock (playersLock)
                                 {
                                     this.players[waitingPlayer].matchID = matchID;
                                     this.players[waitingPlayer].matchActualization = true;
                                     this.players[playersWaiting[i]].matchID = matchID;
                                     this.players[playersWaiting[i]].matchActualization = true;
                                 }
-                                lock (games) games.Add(new Gameplay(this.players[waitingPlayer], this.players[playersWaiting[i]], 9, Variables.scoreToWin));
+                                lock (gamesLock) games.Add(new Gameplay(this.players[waitingPlayer], this.players[playersWaiting[i]], 9, Variables.scoreToWin));
 
 
-                                lock (this.playersWaitingForGame)
+                                lock (playersWaitingForGameLock)
                                 {
                                     var itemToRemove = this.playersWaitingForGame.Single(r => r == waitingPlayer);
                                     this.playersWaitingForGame.Remove(itemToRemove);
@@ -268,13 +275,13 @@ namespace ServerLibrary
             
             int matchID;
             string playerName;
-            lock(players)
+            lock (playersLock)
             {
                 matchID = players[clientID].matchID;
                 playerName = players[clientID].name;
             }
             Player p1, p2;
-            lock(games)
+            lock (gamesLock)
             {
                 p1 = games[matchID].p1;
                 p2 = games[matchID].p2;
@@ -282,7 +289,7 @@ namespace ServerLibrary
 
             }
 
-            lock(players)
+            lock (playersLock)
             {
                 if(p1.name == playerName)
                 {
@@ -294,7 +301,7 @@ namespace ServerLibrary
 
         public string SendOppMove(string msg,int clientID)
         {
-            lock(games)
+            lock (gamesLock)
             {
                     string name = players[clientID].name;
                     int p1Points = games[players[clientID].matchID].p1Points;
@@ -312,7 +319,7 @@ namespace ServerLibrary
         {
 
             int matchID;
-            lock (players)
+            lock (playersLock)
             {
                 if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.SEND_MOVE);
                 if (players[clientID].matchID < 0) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_IN_GAME, (int)Options.SEND_MOVE);
@@ -325,7 +332,7 @@ namespace ServerLibrary
 
             lock (games[matchID])
             {
-                lock (players)
+                lock (playersLock)
                 {
                     bool check_move = games[matchID].move(move, players[clientID]);
 
@@ -401,9 +408,9 @@ namespace ServerLibrary
 
         public string EndGameMessage(string msg, int clientID)
         {
-            lock(games)
+            lock (gamesLock)
             {
-                lock(players)
+                lock (playersLock)
                 {
                     if(games[players[clientID].matchID].p1.name == players[clientID].name)
                     {
@@ -422,7 +429,7 @@ namespace ServerLibrary
         //Returns true if game has been founded for client
         public bool CheckMatchAcctualization(int clientID)
         {
-            lock (players)
+            lock (playersLock)
             {
                 try
                 {
@@ -448,9 +455,9 @@ namespace ServerLibrary
 
         public bool CheckPlayerTurn(int clientID)
         {
-            lock(players)
+            lock (playersLock)
             {
-                lock (games)
+                lock (gamesLock)
                 {
                     if (players[clientID].playerTurn && !games[players[clientID].matchID].roundEnd) {
                         players[clientID].playerTurn = false;
@@ -468,9 +475,9 @@ namespace ServerLibrary
         /// <returns>0 - No end game  1 - Player won game  2 - Player lost game</returns>
         public int CheckEndGame(int clientID)
         {
-            lock(players)
+            lock (playersLock)
             {
-                lock(games)
+                lock (gamesLock)
                 {
                     if(players[clientID].won)
                     {
