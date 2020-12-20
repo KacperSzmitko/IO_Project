@@ -16,7 +16,6 @@ namespace ServerLibrary
     public class ClientProcesing
     {
 
-
         /// <summary>
         /// Delegate which represents function used to procces client data
         /// </summary>
@@ -40,10 +39,10 @@ namespace ServerLibrary
 
         public DbMethods dbConnection { get; set; }
 
-        private object functionLock = new object();
-        private object playersLock = new object();
-        private object gamesLock = new object();
-        private object playersWaitingForGameLock = new object();
+        private static readonly object functionLock = new object();
+        private static readonly object playersLock = new object();
+        private static readonly object gamesLock = new object();
+        private static readonly object playersWaitingForGameLock = new object();
 
 
         private Security security;
@@ -64,8 +63,10 @@ namespace ServerLibrary
 
             lock (functionLock)
             {
-                return functions[option](string.Join("$$",list), clientID);
+                Console.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
+                return functions[option](string.Join("$$", list), clientID);
             }
+
         }
 
 
@@ -96,7 +97,7 @@ namespace ServerLibrary
             string playerName = "";
             lock (playersLock)
             {
-                if(players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.MATCH_HISTORY);
+                if (players[clientID].sessionId == null) return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NOT_LOGGED_IN, (int)Options.MATCH_HISTORY);
                 try
                 {
                     playerName = players[clientID].name;
@@ -105,6 +106,7 @@ namespace ServerLibrary
                 {
                     return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.MATCH_HISTORY);
                 }
+            }
             
             try { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.NO_ERROR, (int)Options.MATCH_HISTORY, dbConnection.GetMatchHistoryData(playerName)); }
             catch { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.DB_CONNECTION_ERROR, (int)Options.MATCH_HISTORY); }
@@ -150,7 +152,7 @@ namespace ServerLibrary
 
             string passwordHash = "";
             try { passwordHash = dbConnection.GetUserPassword(username); }
-            catch (Exception e) { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.LOGIN); }
+            catch  { return TransmisionProtocol.CreateServerMessage((int)ErrorCodes.USER_NOT_FOUND, (int)Options.LOGIN); }
 
             if (security.VerifyPassword(passwordHash, password))
             {
