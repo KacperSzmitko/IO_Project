@@ -63,7 +63,6 @@ namespace ServerLibrary
 
             lock (functionLock)
             {
-                Console.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
                 return functions[option](string.Join("$$", list), clientID);
             }
 
