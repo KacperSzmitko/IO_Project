@@ -13,7 +13,7 @@ namespace Client.Models
 
         public WaitingRoomModel(ServerConnection connection, User user) : base(connection, user) { }
 
-        public bool SearchGame() {
+        public bool SearchMatch() {
             int error = ServerCommands.SearchMatchCommand(ref connection, user.SessionID);
             if (error == (int)ErrorCodes.NO_ERROR) return true;
             else throw new Exception(GetErrorCodeName(error));
@@ -23,6 +23,12 @@ namespace Client.Models
             ServerCommands.GetFoundMatchCommandResponse response = ServerCommands.GetFoundMatchCommand_responseOnly(ref connection);
             if (response.error != (int)ErrorCodes.NO_ERROR) throw new Exception(GetErrorCodeName(response.error));
             return new Opponent(response.opponentName, response.opponentRank, !Convert.ToBoolean(response.isCross));
+        }
+
+        public bool StopSearchingMatch() {
+            int error = ServerCommands.StopSearchingMatchCommand(ref connection, user.SessionID);
+            if (error == (int)ErrorCodes.NO_ERROR) return true;
+            else throw new Exception(GetErrorCodeName(error));
         }
 
 

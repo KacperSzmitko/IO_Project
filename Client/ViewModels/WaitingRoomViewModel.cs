@@ -13,12 +13,12 @@ namespace Client.ViewModels
         private WaitingRoomModel model;
 
         private Thread waitingDotsThread;
-        private Thread searchGameThread;
+        private Thread searchMatchThread;
 
         private RelayCommand goHomeCommand;
 
         private bool successfulSearchStart;
-        private bool gameFound, stopSearching;
+        private bool matchFound, stopSearching;
 
         private string waitingDots;
 
@@ -39,8 +39,8 @@ namespace Client.ViewModels
                 if (goHomeCommand == null) {
                     goHomeCommand = new RelayCommand(_ => {
                         stopSearching = true;
-                        searchGameThread.Join();
-                        navigator.CurrentViewModel = new HomeViewModel(connection, navigator, model.User);
+                        searchMatchThread.Join();
+                        if (model.StopSearchingMatch()) navigator.CurrentViewModel = new HomeViewModel(connection, navigator, model.User);
                     }, _ => true);
                 }
                 return goHomeCommand;
@@ -50,17 +50,17 @@ namespace Client.ViewModels
         public WaitingRoomViewModel(ServerConnection connection, Navigator navigator, User user) : base(connection, navigator) {
             this.model = new WaitingRoomModel(this.connection, user);
             this.successfulSearchStart = false;
-            this.gameFound = false;
+            this.matchFound = false;
             this.stopSearching = false;
             this.waitingDots = ".";
             this.waitingDotsThread = new Thread(UpdateWaitingDotsAsync);
             this.waitingDotsThread.Start();
-            this.searchGameThread = new Thread(SearchGameAsync);
-            this.searchGameThread.Start();
+            this.searchMatchThread = new Thread(SearchMatchAsync);
+            this.searchMatchThread.Start();
         }
 
         private void UpdateWaitingDotsAsync() {
-            while (!gameFound && !stopSearching) {
+            while (!matchFound && !stopSearching) {
                 waitingDots = ".";
                 OnPropertyChanged(nameof(WaitingDots));
                 Thread.Sleep(750);
@@ -73,13 +73,13 @@ namespace Client.ViewModels
             }
         }
 
-        private void SearchGameAsync() {
-            successfulSearchStart = model.SearchGame(); 
+        private void SearchMatchAsync() {
+            successfulSearchStart = model.SearchMatch(); 
             if (successfulSearchStart) {
                 while (!model.NetworkStreamDataAvailable && !stopSearching) Thread.Sleep(10);
                 if (model.NetworkStreamDataAvailable) {
                     Opponent opponent = model.GetFoundMatch();
-                    gameFound = true;
+                    matchFound = true;
                     stopSearching = true;
                     if (opponent == null) navigator.CurrentViewModel = new HomeViewModel(connection, navigator, model.User);
                     navigator.CurrentViewModel = new MatchViewModel(connection, navigator, model.User, opponent);

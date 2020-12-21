@@ -14,10 +14,10 @@ namespace Shared
         SEND_MOVE = 7,        //    sessionid:<>$$move:<>$$                       Error:<>$$Score:<>$$ np. 1-0 gdzie pierwsza jest klienta ktroy wyslal ruch
         DISCONNECT = 8,       //                                                  Error:<>$$
         CHECK_USER_NAME = 9,  //    username:<>$$                                 Error:<>$$
-        SEND_MATCH = 10,      //                                                  Error:<>$$OppName:<>$$OppRank:<>$$IsCross:<>
-        OPP_MOVE = 11,        //                                                  Error:<>$$Score:<>$$OppMove:<>$$
-        STOP_SEARCHING = 12,  //                                                  Error:<>$$    
-        
+        SEND_MATCH = 10,      //    SERVER ONLY                                   Error:<>$$OppName:<>$$OppRank:<>$$IsCross:<>
+        OPP_MOVE = 11,        //    SERVER ONLY                                   Error:<>$$Score:<>$$OppMove:<>$$
+        STOP_SEARCHING = 12,  //    sessionid:<>$$                                Error:<>$$    
+
     }
 
 

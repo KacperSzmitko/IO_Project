@@ -98,7 +98,7 @@ namespace Client
             }
         }
 
-        
+
 
         //******************** TOOLS FOR CREATING COMMANDS ********************
 
@@ -106,14 +106,14 @@ namespace Client
         /// Function which formats client data by using our transmition protocol
         /// </summary>
         /// <param name="result">Reference to string where u want your result to be stored</param>
-        /// <param name="option">*0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove  8 - Disconnect  9 - CheckUserName </param>
-        /// <param name="fields">*0-4 : SessionID    5-6 : Username Password   7 : SessionID Move   9 : Username</param>
+        /// <param name="option">*0 - Logout  1 - MatchHistory  2 - Rank  3 - SearchGame  4 - EndGame  5 - Login  6 - CreateUser  7 - SendMove  8 - Disconnect  9 - CheckUserName  12 - StopSearchingForMatch</param>
+        /// <param name="fields">*0-4, 12 : SessionID    5-6 : Username Password   7 : SessionID Move   9 : Username</param>
         private static string CreateClientMessage(int option, params string[] fields) {
             string result = "";
             try {
                 result += AddField("option", option.ToString());
                 //Logout MatchHistory Rank SearchGame EndGame
-                if (option >= 0 && option <= 4) {
+                if (option >= 0 && option <= 4 || option == 12) {
                     result += AddField("sessionid", fields[0]);
                 }
                 //Login UserCreate
@@ -236,6 +236,13 @@ namespace Client
             string[] args = GetArgArrayFromResponse(connection.ReadMessage());
             if (Int32.Parse(args[0]) != (int)ErrorCodes.NO_ERROR) return new GetFoundMatchCommandResponse(Int32.Parse(args[0]), "", 0, 0);
             return new GetFoundMatchCommandResponse(Int32.Parse(args[0]), args[1], Int32.Parse(args[2]), Int32.Parse(args[3]));
+        }
+
+        public static int StopSearchingMatchCommand(ref ServerConnection connection, string sessionID) {
+            string command = CreateClientMessage((int)Options.STOP_SEARCHING, sessionID);
+            connection.SendMessage(command);
+            string[] args = GetArgArrayFromResponse(connection.ReadMessage());
+            return Int32.Parse(args[0]);
         }
 
         public static SendUserMoveCommandResponse SendUserMoveCommand(ref ServerConnection connection, string sessionID, int move) {
