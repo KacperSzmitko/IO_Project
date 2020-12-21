@@ -6,6 +6,6 @@ namespace Shared
 {
     public static class Variables
     {
-        public static readonly int scoreToWin = 1;
+        public static readonly int scoreToWin = 5;
     }
 }

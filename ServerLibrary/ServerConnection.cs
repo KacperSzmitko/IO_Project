@@ -19,7 +19,6 @@ namespace ServerLibrary
             listener.Start();
             while (true)
             {
-                Console.WriteLine("Waiting for a client to connect...");
                 TcpClient client = listener.AcceptTcpClient();
                 //Thread t = new Thread(ClientConnection);
                 //t.Start(client);
@@ -109,8 +108,10 @@ namespace ServerLibrary
 
                         if(endGame == 2)
                         {
+
                             sendMessage = menager.ProccesClient("Option:4$$", clientID);
                             message = Encoding.ASCII.GetBytes(sendMessage);
+                            Thread.Sleep(1000);
                             stream.Write(message);
 
                         }
@@ -120,9 +121,10 @@ namespace ServerLibrary
                     {
                         sendMessage = menager.ProccesClient("Option:4$$", clientID);
                         message = Encoding.ASCII.GetBytes(sendMessage);
+                        Thread.Sleep(1000);
                         stream.Write(message);
                     }
-                    Thread.Sleep(100);
+                    Thread.Sleep(1);
 
                 }
                 catch
