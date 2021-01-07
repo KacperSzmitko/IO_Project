@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -25,6 +26,8 @@ namespace ServerLibrary
         //Index to Games array
         public int matchID { get; set; }
 
+        public DbMethods dbConnection { get; set; }
+
         public void GenerateSessionId()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -34,6 +37,7 @@ namespace ServerLibrary
 
         public Player()
         {
+            this.dbConnection = new DbMethods();
             this.sessionId = null;
             this.name = null;
             //-1 not in match >=0 in match
