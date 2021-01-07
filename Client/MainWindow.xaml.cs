@@ -20,7 +20,7 @@ namespace Client
     {
         public MainWindow() {
             InitializeComponent();
-            ServerConnection connection = new ServerConnection("localhost", 17777);
+            ServerConnection connection = new ServerConnection("bd-projekt.ddns.net", 17777);
             Navigator navigator = new Navigator();
             MainViewModel viewModel = new MainViewModel(connection, navigator);
             navigator.ViewChanged += viewModel.OnViewChanged;

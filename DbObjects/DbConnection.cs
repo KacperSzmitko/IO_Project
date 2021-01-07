@@ -17,7 +17,7 @@ namespace DbLibrary
         //Initialize values
         protected void Initialize()
         {
-            server = "192.168.1.250";
+            server = "127.0.0.1";
             database = "projekt_io";
             uid = "user_io";
             password = "DN8OHj8mUkNmXBRm";
