@@ -139,7 +139,7 @@ namespace Client.ViewModels
             get {
                 if (goLoginCommand == null) {
                     goLoginCommand = new RelayCommand(_ => {
-                        updateIfUsernameExistThread.Join();
+                        if (updateIfUsernameExistThread != null) updateIfUsernameExistThread.Join();
                         navigator.CurrentViewModel = new LoginViewModel(connection, navigator);
                     }, _ => true);
                 }
